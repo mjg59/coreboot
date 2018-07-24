@@ -2,6 +2,10 @@
 
 This section contains documentation about coreboot on specific mainboards.
 
+## 51NB
+
+- [X210](51nb/x210.md)
+
 ## ASUS
 
 - [F2A85-M](asus/f2a85-m.md)
