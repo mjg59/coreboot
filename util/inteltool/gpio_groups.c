@@ -202,11 +202,45 @@ static const char *const sunrise_group_e_names[] = {
 	"GPP_E12",	"USB_OC3#",	"n/a",		"n/a",
 };
 
+static const char *const sunrise_lp_group_e_names[] = {
+	"GPP_E0",	"SATAXPCIE0",	"SATAGP0",	"n/a",
+	"GPP_E1",	"SATAXPCIE1",	"SATAGP1",	"n/a",
+	"GPP_E2",	"SATAXPCIE2",	"SATAGP2",	"n/a",
+	"GPP_E3",	"CPU_GP0",	"n/a",		"n/a",
+	"GPP_E4",	"SATA_DEVSLP0",	"n/a",		"n/a",
+	"GPP_E5",	"SATA_DEVSLP1",	"n/a",		"n/a",
+	"GPP_E6",	"SATA_DEVSLP2",	"n/a",		"n/a",
+	"GPP_E7",	"CPU_GP1",	"n/a",		"n/a",
+	"GPP_E8",	"SATA_LED#",	"n/a",		"n/a",
+	"GPP_E9",	"USB_OC0#",	"n/a",		"n/a",
+	"GPP_E10",	"USB_OC1#",	"n/a",		"n/a",
+	"GPP_E11",	"USB_OC2#",	"n/a",		"n/a",
+	"GPP_E12",	"USB_OC3#",	"n/a",		"n/a",
+	"GPP_E13",	"n/a",		"n/a",		"n/a",
+	"GPP_E14",	"n/a",		"n/a",		"n/a",
+	"GPP_E15",	"n/a",		"n/a",		"n/a",
+	"GPP_E16",	"n/a",		"n/a",		"n/a",
+	"GPP_E17",	"n/a",		"n/a",		"n/a",
+	"GPP_E18",	"n/a",		"n/a",		"n/a",
+	"GPP_E19",	"n/a",		"n/a",		"n/a",
+	"GPP_E20",	"n/a",		"n/a",		"n/a",
+	"GPP_E21",	"n/a",		"n/a",		"n/a",
+	"GPP_E22",	"n/a",		"n/a",		"n/a",
+	"GPP_E23",	"n/a",		"n/a",		"n/a",
+};
+
 static const struct gpio_group sunrise_group_e = {
 	.display	= "------- GPIO Group GPP_E -------",
 	.pad_count	= ARRAY_SIZE(sunrise_group_e_names) / 4,
 	.func_count	= 4,
 	.pad_names	= sunrise_group_e_names,
+};
+
+static const struct gpio_group sunrise_lp_group_e = {
+	.display	= "------- GPIO Group GPP_E -------",
+	.pad_count	= ARRAY_SIZE(sunrise_lp_group_e_names) / 4,
+	.func_count	= 4,
+	.pad_names	= sunrise_lp_group_e_names,
 };
 
 static const char *const sunrise_group_f_names[] = {
@@ -270,11 +304,29 @@ static const char *const sunrise_group_g_names[] = {
 	"GPP_G23",	"n/a",		"n/a",	"n/a",
 };
 
+static const char *const sunrise_lp_group_g_names[] = {
+	"GPP_G0",	"FAN_TACH_0",	"n/a",	"n/a",
+	"GPP_G1",	"FAN_TACH_1",	"n/a",	"n/a",
+	"GPP_G2",	"FAN_TACH_2",	"n/a",	"n/a",
+	"GPP_G3",	"FAN_TACH_3",	"n/a",	"n/a",
+	"GPP_G4",	"FAN_TACH_4",	"n/a",	"n/a",
+	"GPP_G5",	"FAN_TACH_5",	"n/a",	"n/a",
+	"GPP_G6",	"FAN_TACH_6",	"n/a",	"n/a",
+	"GPP_G7",	"FAN_TACH_7",	"n/a",	"n/a",
+};
+
 static const struct gpio_group sunrise_group_g = {
 	.display	= "------- GPIO Group GPP_G -------",
 	.pad_count	= ARRAY_SIZE(sunrise_group_g_names) / 4,
 	.func_count	= 4,
 	.pad_names	= sunrise_group_g_names,
+};
+
+static const struct gpio_group sunrise_lp_group_g = {
+	.display	= "------- GPIO Group GPP_G -------",
+	.pad_count	= ARRAY_SIZE(sunrise_lp_group_g_names) / 4,
+	.func_count	= 4,
+	.pad_names	= sunrise_lp_group_g_names,
 };
 
 static const char *const sunrise_group_h_names[] = {
@@ -316,11 +368,22 @@ static const struct gpio_group *const sunrise_community_cdefgh_groups[] = {
 	&sunrise_group_f, &sunrise_group_g, &sunrise_group_h,
 };
 
+static const struct gpio_group *const sunrise_lp_community_cde_groups[] = {
+	&sunrise_group_c, &sunrise_group_d, &sunrise_lp_group_e,
+};
+
 static const struct gpio_community sunrise_community_cdefgh = {
 	.name		= "------- GPIO Community 1 -------",
 	.pcr_port_id	= 0xae,
 	.group_count	= ARRAY_SIZE(sunrise_community_cdefgh_groups),
 	.groups		= sunrise_community_cdefgh_groups,
+};
+
+static const struct gpio_community sunrise_lp_community_cde = {
+	.name		= "------- GPIO Community 1 -------",
+	.pcr_port_id	= 0xae,
+	.group_count	= ARRAY_SIZE(sunrise_lp_community_cde_groups),
+	.groups		= sunrise_lp_community_cde_groups,
 };
 
 static const char *const sunrise_group_gpd_names[] = {
@@ -381,6 +444,10 @@ static const struct gpio_group *const sunrise_community_i_groups[] = {
 	&sunrise_group_i,
 };
 
+static const struct gpio_group *const sunrise_lp_community_fg_groups[] = {
+	&sunrise_group_f, &sunrise_lp_group_g,
+};
+
 static const struct gpio_community sunrise_community_i = {
 	.name		= "------- GPIO Community 3 -------",
 	.pcr_port_id	= 0xac,
@@ -388,10 +455,23 @@ static const struct gpio_community sunrise_community_i = {
 	.groups		= sunrise_community_i_groups,
 };
 
+static const struct gpio_community sunrise_lp_community_fg = {
+	.name		= "------- GPIO Community 3 -------",
+	.pcr_port_id	= 0xac,
+	.group_count	= ARRAY_SIZE(sunrise_lp_community_fg_groups),
+	.groups		= sunrise_lp_community_fg_groups,
+};
+
 static const struct gpio_community *const sunrise_communities[] = {
 	&sunrise_community_ab, &sunrise_community_cdefgh,
 	&sunrise_community_gpd, &sunrise_community_i,
 };
+
+static const struct gpio_community *const sunrise_lp_communities[] = {
+	&sunrise_community_ab, &sunrise_lp_community_cde,
+	&sunrise_community_gpd, &sunrise_lp_community_fg,
+};
+
 
 static const char *decode_pad_mode(const struct gpio_group *const group,
 				   const size_t pad, const uint32_t dw0)
@@ -458,6 +538,11 @@ void print_gpio_groups(struct pci_dev *const sb)
 	case PCI_DEVICE_ID_INTEL_CM236:
 		community_count = ARRAY_SIZE(sunrise_communities);
 		communities = sunrise_communities;
+		pcr_init(sb);
+		break;
+	case PCI_DEVICE_ID_INTEL_SUNRISEPOINT_LP:
+		community_count = ARRAY_SIZE(sunrise_lp_communities);
+		communities = sunrise_lp_communities;
 		pcr_init(sb);
 		break;
 	default:

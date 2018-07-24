@@ -144,6 +144,8 @@ static inline uint32_t inl(unsigned port)
 #define PCI_DEVICE_ID_INTEL_SUNRISEPOINT_SATA	0xa102
 #define PCI_DEVICE_ID_INTEL_SUNRISEPOINT_P2SB	0xa120
 #define PCI_DEVICE_ID_INTEL_SUNRISEPOINT_PRE	0xa141
+#define PCI_DEVICE_ID_INTEL_SUNRISEPOINT_LP_SATA 0x9d03
+#define PCI_DEVICE_ID_INTEL_SUNRISEPOINT_LP     0x9d4e
 #define PCI_DEVICE_ID_INTEL_H110		0xa143
 #define PCI_DEVICE_ID_INTEL_H170		0xa144
 #define PCI_DEVICE_ID_INTEL_Z170		0xa145
@@ -246,6 +248,7 @@ static inline uint32_t inl(unsigned port)
 #define PCI_DEVICE_ID_INTEL_CORE_6TH_GEN_M	0x1910 /* Skylake (Mobile) */
 #define PCI_DEVICE_ID_INTEL_CORE_6TH_GEN_WST	0x1918 /* Skylake (Workstation) */
 #define PCI_DEVICE_ID_INTEL_CORE_6TH_GEN_D	0x191f /* Skylake (Desktop) */
+#define PCI_DEVICE_ID_INTEL_CORE_7TH_GEN_M	0x5914 /* Kabylake (Mobile) */
 
 /* Intel GPUs */
 #define PCI_DEVICE_ID_INTEL_G35_EXPRESS		0x2982
