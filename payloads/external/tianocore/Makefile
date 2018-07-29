@@ -17,13 +17,13 @@
 export SHELL := env bash
 
 STABLE_COMMIT_ID=315d9d08fd77db1024ccc5307823da8aaed85e2f
-TAG-$(CONFIG_TIANOCORE_MASTER)=origin/master
+TAG-$(CONFIG_TIANOCORE_MASTER)=origin/fbgop
 TAG-$(CONFIG_TIANOCORE_STABLE)=$(STABLE_COMMIT_ID)
 TAG-$(CONFIG_TIANOCORE_REVISION)=$(CONFIG_TIANOCORE_REVISION_ID)
 
 project_name=Tianocore
 project_dir=$(CURDIR)/tianocore
-project_git_repo=https://github.com/tianocore/edk2
+project_git_repo=https://github.com/MrChromebox/edk2
 
 export EDK_TOOLS_PATH=$(project_dir)/BaseTools
 
@@ -62,12 +62,12 @@ $(project_dir)/.version_$(TAG-y): fetch
 			git checkout master; \
 			git branch -D coreboot 2>/dev/null; \
 			git checkout -b coreboot $(TAG-y); \
-		for patch in $(CURDIR)/patches/*.patch; do \
-			echo "Applying $$patch"; \
-			cd $(project_dir); \
-			git am --keep-cr $$patch || \
-				( echo " Error when applying patches.\n"; git am --abort; exit 1; ); \
-		done; \
+#		for patch in $(CURDIR)/patches/*.patch; do \
+#			echo "Applying $$patch"; \
+#			cd $(project_dir); \
+#			git am --keep-cr $$patch || \
+#				( echo " Error when applying patches.\n"; git am --abort; exit 1; ); \
+#		done; \
 		if ! [ "$(TAG-y)" = "origin/master" ] ; then \
 			touch $(project_dir)/.version_$(STABLE_COMMIT_ID); \
 		fi; \
