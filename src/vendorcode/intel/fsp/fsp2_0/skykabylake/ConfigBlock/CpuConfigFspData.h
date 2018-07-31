@@ -1,23 +1,35 @@
 /** @file
   FSP CPU Data Config Block.
 
-@copyright
-  Copyright (c) 2016 Intel Corporation. All rights reserved
-  This software and associated documentation (if any) is furnished
-  under a license and may only be used or copied in accordance
-  with the terms of the license. Except as permitted by the
-  license, no part of this software or documentation may be
-  reproduced, stored in a retrieval system, or transmitted in any
-  form or by any means without the express written consent of
-  Intel Corporation.
-  This file contains an 'Intel Peripheral Driver' and is uniquely
-  identified as "Intel Reference Module" and is licensed for Intel
-  CPUs and chipsets under the terms of your license agreement with
-  Intel or your vendor. This file may be modified by the user, subject
-  to additional terms of the license agreement.
+  @copyright
+  Copyright (c) 2016, Intel Corporation. All rights reserved.<BR>
 
-@par Specification Reference:
+Redistribution and use in source and binary forms, with or without modification,
+are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice, this
+  list of conditions and the following disclaimer.
+* Redistributions in binary form must reproduce the above copyright notice, this
+  list of conditions and the following disclaimer in the documentation and/or
+  other materials provided with the distribution.
+* Neither the name of Intel Corporation nor the names of its contributors may
+  be used to endorse or promote products derived from this software without
+  specific prior written permission.
+
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+  THE POSSIBILITY OF SUCH DAMAGE.
+
 **/
+
 #ifndef _CPU_CONFIG_FSP_DATA_H_
 #define _CPU_CONFIG_FSP_DATA_H_
 
@@ -63,9 +75,10 @@ typedef union {
     UINT32 SkipMpInit          : 1;                 ///< For Fsp only, Silicon Initialization will skip MP Initialization (including BSP) if enabled. For non-FSP, this should always be 0.
     UINT32 RsvdBits            : 15;                ///< Reserved for future use
     UINT32 Reserved;
-  } Bits;
-  UINT32 Uint32[2];
-} CPU_CONFIG_FSP_DATA;
+    } Bits;
+    UINT32 Uint32[2];
+  } CPU_CONFIG_FSP_DATA;
+
 #pragma pack (pop)
 
 #endif // _CPU_CONFIG_FSP_DATA_H_

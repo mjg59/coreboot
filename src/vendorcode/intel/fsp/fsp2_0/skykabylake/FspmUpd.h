@@ -1,6 +1,7 @@
 /** @file
 
-Copyright (c) 2017, Intel Corporation. All rights reserved.<BR>
+  @copyright
+  Copyright (c) 2018, Intel Corporation. All rights reserved.<BR>
 
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -741,7 +742,7 @@ typedef struct {
 
 /** Offset 0x02CF - Maximum Core Turbo Ratio Override
   Maximum core turbo ratio override allows to increase CPU core frequency beyond the
-  fused max turbo ratio limit. <b>0: Hardware defaults.</b> Range: 0-83
+  fused max turbo ratio limit. <b>0: Hardware defaults.</b> Range: 0-255
 **/
   UINT8                       CoreMaxOcRatio;
 
@@ -752,13 +753,13 @@ typedef struct {
   UINT8                       CoreVoltageMode;
 
 /** Offset 0x02D1 - Minimum clr turbo ratio override
-  Minimum clr turbo ratio override. <b>0: Hardware defaults.</b> Range: 0-83
+  Minimum clr turbo ratio override. <b>0: Hardware defaults.</b> Range: 0-255
 **/
   UINT8                       RingMinOcRatio;
 
 /** Offset 0x02D2 - Maximum clr turbo ratio override
   Maximum clr turbo ratio override allows to increase CPU clr frequency beyond the
-  fused max turbo ratio limit. <b>0: Hardware defaults.</b>  Range: 0-83
+  fused max turbo ratio limit. <b>0: Hardware defaults.</b>  Range: 0-255
 **/
   UINT8                       RingMaxOcRatio;
 
@@ -905,11 +906,26 @@ typedef struct {
 **/
   UINT8                       FlashWearOutProtection;
 
-/** Offset 0x0301 - ReservedSecurityPreMem
+/** Offset 0x0301 - Thermal Velocity Boost Ratio clipping
+  0(Default): Disabled, 1: Enabled. This service controls Core frequency reduction
+  caused by high package temperatures for processors that implement the Intel Thermal
+  Velocity Boost (TVB) feature
+  0: Disabled, 1: Enabled
+**/
+  UINT8                       TvbRatioClipping;
+
+/** Offset 0x0302 - Thermal Velocity Boost voltage optimization
+  0: Disabled, 1: Enabled(Default). This service controls thermal based voltage optimizations
+  for processors that implement the Intel Thermal Velocity Boost (TVB) feature.
+  0: Disabled, 1: Enabled
+**/
+  UINT8                       TvbVoltageOptimization;
+
+/** Offset 0x0303 - ReservedSecurityPreMem
   Reserved for Security Pre-Mem
   $EN_DIS
 **/
-  UINT8                       ReservedSecurityPreMem[9];
+  UINT8                       ReservedSecurityPreMem[7];
 
 /** Offset 0x030A - PCH HPET Enabled
   Enable/disable PCH HPET.
@@ -1261,9 +1277,15 @@ typedef struct {
 **/
   UINT8                       CleanMemory;
 
-/** Offset 0x051C
+/** Offset 0x051C - TjMax Offset
+  TjMax offset. Specified value here is clipped by pCode (125 - TjMax Offset) to support
+  TjMax in the range of 62 to 115 deg Celsius. Valid Range 0 - 63
 **/
-  UINT8                       ReservedFspmUpd[4];
+  UINT8                       TjMaxOffset;
+
+/** Offset 0x051D
+**/
+  UINT8                       ReservedFspmUpd[3];
 } FSP_M_CONFIG;
 
 /** Fsp M Test Configuration
