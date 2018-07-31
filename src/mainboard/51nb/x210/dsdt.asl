@@ -47,4 +47,7 @@ DefinitionBlock(
 
 	// Mainboard specific
 	#include "acpi/mainboard.asl"
+
+	// Graphics display
+	#include "acpi/graphics.asl"
 }
