@@ -10,12 +10,6 @@ chip soc/intel/skylake
 	register "eist_enable" = "1"
 	register "VmxEnable" = "1"
 
-	# Set the Thermal Control Circuit (TCC) activaction value to 95C
-	# even though FSP integration guide says to set it to 100C for SKL-U
-	# (offset at 0), because when the TCC activates at 100C, the CPU
-	# will have already shut itself down from overheating protection.
-	register "tcc_offset" = "5" # TCC of 95C
-
 	# GPE configuration
 	# Note that GPE events called out in ASL code rely on this
 	# route. i.e. If this route changes then the affected GPE
@@ -89,24 +83,20 @@ chip soc/intel/skylake
 	#| Psi4Enable     | 1         | 1         | 1           | 1        |
 	#| ImonSlope      | 0         | 0         | 0           | 0        |
 	#| ImonOffset     | 0         | 0         | 0           | 0        |
-	#| IccMax         | 7A        | 34A       | 35A         | 35A      |
+	#| IccMax         | 6A        | 64A       | 31A         | 31A      |
 	#| VrVoltageLimit | 1.52V     | 1.52V     | 1.52V       | 1.52V    |
-	#| AC LoadLine    | 15 mOhm   | 5.7 mOhm  | 5.2 mOhm    | 5.2 mOhm |
-	#| DC LoadLine    | 14.3 mOhm | 4.83 mOhm | 4.2 mOhm    | 4.2 mOhm |
 	#+----------------+-----------+-----------+-------------+----------+
 	register "domain_vr_config[VR_SYSTEM_AGENT]" = "{
 		.vr_config_enable = 1,
 		.psi1threshold = VR_CFG_AMP(20),
 		.psi2threshold = VR_CFG_AMP(4),
 		.psi3threshold = VR_CFG_AMP(1),
-		.psi3enable = 1,
-		.psi4enable = 1,
+		.psi3enable = 0,
+		.psi4enable = 0,
 		.imon_slope = 0x0,
 		.imon_offset = 0x0,
-		.icc_max = VR_CFG_AMP(7),
+		.icc_max = VR_CFG_AMP(6),
 		.voltage_limit = 1520,
-		.ac_loadline = 1500,
-		.dc_loadline = 1430,
 	}"
 
 	register "domain_vr_config[VR_IA_CORE]" = "{
@@ -114,14 +104,12 @@ chip soc/intel/skylake
 		.psi1threshold = VR_CFG_AMP(20),
 		.psi2threshold = VR_CFG_AMP(5),
 		.psi3threshold = VR_CFG_AMP(1),
-		.psi3enable = 1,
-		.psi4enable = 1,
+		.psi3enable = 0,
+		.psi4enable = 0,
 		.imon_slope = 0x0,
 		.imon_offset = 0x0,
-		.icc_max = VR_CFG_AMP(34),
+		.icc_max = VR_CFG_AMP(64),
 		.voltage_limit = 1520,
-		.ac_loadline = 570,
-		.dc_loadline = 483,
 	}"
 
 	register "domain_vr_config[VR_GT_UNSLICED]" = "{
@@ -129,14 +117,12 @@ chip soc/intel/skylake
 		.psi1threshold = VR_CFG_AMP(20),
 		.psi2threshold = VR_CFG_AMP(5),
 		.psi3threshold = VR_CFG_AMP(1),
-		.psi3enable = 1,
-		.psi4enable = 1,
+		.psi3enable = 0,
+		.psi4enable = 0,
 		.imon_slope = 0x0,
 		.imon_offset = 0x0,
-		.icc_max = VR_CFG_AMP(35),
+		.icc_max = VR_CFG_AMP(31),
 		.voltage_limit = 1520,
-		.ac_loadline = 520,
-		.dc_loadline = 420,
 	}"
 
 	register "domain_vr_config[VR_GT_SLICED]" = "{
@@ -144,14 +130,12 @@ chip soc/intel/skylake
 		.psi1threshold = VR_CFG_AMP(20),
 		.psi2threshold = VR_CFG_AMP(5),
 		.psi3threshold = VR_CFG_AMP(1),
-		.psi3enable = 1,
-		.psi4enable = 1,
+		.psi3enable = 0,
+		.psi4enable = 0,
 		.imon_slope = 0x0,
 		.imon_offset = 0x0,
-		.icc_max = VR_CFG_AMP(35),
+		.icc_max = VR_CFG_AMP(31),
 		.voltage_limit = 1520,
-		.ac_loadline = 520,
-		.dc_loadline = 420,
 	}"
 
 	# Enable Root Ports 1, 4 and 9
@@ -172,8 +156,8 @@ chip soc/intel/skylake
 	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC1)"	# Type-A Port (left)
 	register "usb3_ports[5]" = "USB3_PORT_DEFAULT(OC1)"	# Type-A Port (right)
 
-	# PL2 override 25W
-	register "tdp_pl2_override" = "25"
+	# PL2 override 44W
+	register "tdp_pl2_override" = "44"
 
 	# Send an extra VR mailbox command for the PS4 exit issue
 	register "SendVrMbxCmd" = "2"
