@@ -97,6 +97,8 @@ chip soc/intel/skylake
 		.imon_offset = 0x0,
 		.icc_max = VR_CFG_AMP(6),
 		.voltage_limit = 1520,
+		.ac_loadline = 1030,
+		.dc_loadline = 1030,
 	}"
 
 	register "domain_vr_config[VR_IA_CORE]" = "{
@@ -110,6 +112,8 @@ chip soc/intel/skylake
 		.imon_offset = 0x0,
 		.icc_max = VR_CFG_AMP(64),
 		.voltage_limit = 1520,
+		.ac_loadline = 240,
+		.dc_loadline = 240,
 	}"
 
 	register "domain_vr_config[VR_GT_UNSLICED]" = "{
@@ -123,6 +127,8 @@ chip soc/intel/skylake
 		.imon_offset = 0x0,
 		.icc_max = VR_CFG_AMP(31),
 		.voltage_limit = 1520,
+		.ac_loadline = 310,
+		.dc_loadline = 310,
 	}"
 
 	register "domain_vr_config[VR_GT_SLICED]" = "{
@@ -136,6 +142,8 @@ chip soc/intel/skylake
 		.imon_offset = 0x0,
 		.icc_max = VR_CFG_AMP(31),
 		.voltage_limit = 1520,
+		.ac_loadline = 310,
+		.dc_loadline = 310,
 	}"
 
 	# Enable Root Ports 1, 4 and 9
