@@ -85,12 +85,13 @@ __weak void mainboard_smi_espi_handler(void)
 /* Common Functions */
 
 static void *find_save_state(const struct smm_save_state_ops *save_state_ops,
-	int cmd)
+			     int port, int cmd, bool write)
 {
 	int node;
 	void *state = NULL;
 	uint32_t io_misc_info;
 	uint8_t reg_al;
+	bool found = false;
 
 	/* Check all nodes looking for the one that issued the IO */
 	for (node = 0; node < CONFIG_MAX_CPUS; node++) {
@@ -99,20 +100,31 @@ static void *find_save_state(const struct smm_save_state_ops *save_state_ops,
 		io_misc_info = save_state_ops->get_io_misc_info(state);
 
 		/* Check for Synchronous IO (bit0==1) */
-		if (!(io_misc_info & (1 << 0)))
+		if (!(io_misc_info & (1 << 0))) {
 			continue;
+		}
 		/* Make sure it was a write (bit4==0) */
-		if (io_misc_info & (1 << 4))
+		if (write && (io_misc_info & (1 << 4))) {
 			continue;
-		/* Check for APMC IO port */
-		if (((io_misc_info >> 16) & 0xff) != APM_CNT)
+		}
+		/* Check for IO port */
+		if (((io_misc_info >> 16) & 0xffff) != port) {
 			continue;
-		/* Check AL against the requested command */
-		reg_al = save_state_ops->get_reg(state, RAX);
-		if (reg_al != cmd)
-			continue;
+		}
+
+		if (port == APM_CNT) {
+			/* Check AL against the requested command */
+			reg_al = save_state_ops->get_reg(state, RAX);
+			if (reg_al != cmd)
+				continue;
+		}
+		found = true;
 		break;
 	}
+
+	if (!found)
+		return NULL;
+
 	return state;
 }
 
@@ -278,7 +290,8 @@ static void southbridge_smi_gsmi(
 	void *io_smi = NULL;
 	uint32_t reg_ebx;
 
-	io_smi = find_save_state(save_state_ops, APM_CNT_ELOG_GSMI);
+	io_smi = find_save_state(save_state_ops, APM_CNT, APM_CNT_ELOG_GSMI,
+				 true);
 	if (!io_smi)
 		return;
 	/* Command and return value in EAX */
@@ -300,7 +313,8 @@ static void southbridge_smi_store(
 	void *io_smi;
 	uint32_t reg_ebx;
 
-	io_smi = find_save_state(save_state_ops, APM_CNT_SMMSTORE);
+	io_smi = find_save_state(save_state_ops, APM_CNT, APM_CNT_SMMSTORE,
+				 true);
 	if (!io_smi)
 		return;
 	/* Command and return value in EAX */
@@ -373,7 +387,7 @@ void smihandler_southbridge_apmc(
 			       "SMI#: SMM structures already initialized!\n");
 			return;
 		}
-		state = find_save_state(save_state_ops, reg8);
+		state = find_save_state(save_state_ops, APM_CNT, reg8, true);
 		if (state) {
 			/* EBX in the state save contains the GNVS pointer */
 			uint32_t reg_ebx = save_state_ops->get_reg(state, RBX);
