@@ -43,6 +43,10 @@ DefinitionBlock(
 
 	}
 
+        Scope (\_SB.PCI0.LPCB) {
+	      #include <drivers/applesmc/applesmc.asl>
+	}
+
 	// Chipset specific sleep states
 	#include <soc/intel/skylake/acpi/sleepstates.asl>
 
