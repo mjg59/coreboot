@@ -69,6 +69,9 @@ extern const smi_handler_t southbridge_smi[32];
 void smihandler_southbridge_sleep(
 	const struct smm_save_state_ops *save_state_ops);
 
+void smihandler_apple_smc(
+	const struct smm_save_state_ops *save_state_ops,
+	int address, int data, int write);
 /*
  * This function should be implemented in SOC specific code to handle
  * SMI_APM event. The default functionality is provided in

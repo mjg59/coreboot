@@ -21,6 +21,7 @@
 #include <cpu/x86/cache.h>
 #include <cpu/x86/smm.h>
 #include <delay.h>
+#include <device/applesmc.h>
 #include <device/pci_def.h>
 #include <elog.h>
 #include <intelblocks/fast_spi.h>
@@ -344,6 +345,23 @@ static void finalize(void)
 
 	/* Specific SOC SMI handler during ramstage finalize phase */
 	smihandler_soc_at_finalize();
+}
+
+void smihandler_apple_smc(const struct smm_save_state_ops *save_state_ops,
+			  int address, int data, int write)
+{
+	void *state = NULL;
+	int ret;
+
+	ret = apple_smc_io_trap(address, data, write);
+	if (!write) {
+		printk(BIOS_DEBUG, "SMC io trap returned %x\n", ret);
+		state = find_save_state(save_state_ops, address, 0, false);
+		printk(BIOS_DEBUG, "State is %lx\n", (unsigned long)state);
+		if (state)
+			save_state_ops->set_reg(state, RAX, ret);
+	}
+
 }
 
 void smihandler_southbridge_apmc(

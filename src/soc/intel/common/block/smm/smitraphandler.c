@@ -76,6 +76,7 @@ void smihandler_southbridge_monitor(
 	u8 trap_sts;
 	int i;
 	global_nvs_t *gnvs = smm_get_gnvs();
+	bool write;
 
 	/* TRSR - Trap Status Register */
 	trap_sts = pcr_read8(PID_PSTH, PCR_PSTH_TRPST);
@@ -84,10 +85,16 @@ void smihandler_southbridge_monitor(
 
 	/* TRPC - Trapped cycle */
 	trap_cycle = pcr_read32(PID_PSTH, PCR_PSTH_TRPC);
+
+	/* TRPD - Trapped data */
+	data = pcr_read32(PID_PSTH, PCR_PSTH_TRPD);
+
 	for (i = 16; i < 20; i++) {
 		if (trap_cycle & (1 << i))
 			mask |= (0xff << ((i - 16) << 2));
 	}
+
+	write = !(trap_cycle & (1 << 24));
 
 	/* IOTRAP(3) SMI function call */
 	if (IOTRAP(3)) {
@@ -96,17 +103,20 @@ void smihandler_southbridge_monitor(
 		return;
 	}
 
+	/* IOTRAP(2) emulated Apple SMC */
+	if (IOTRAP(2)) {
+		smihandler_apple_smc(save_state_ops, trap_cycle & 0xfffc,
+				     data & mask, write);
+	}
+
 	/*
-	 * IOTRAP(2) currently unused
 	 * IOTRAP(1) currently unused
 	 */
 
 	/* IOTRAP(0) SMIC */
 	if (IOTRAP(0)) {
-		if (!(trap_cycle & (1 << 24))) { /* It's a write */
+		if (write) {
 			printk(BIOS_DEBUG, "SMI1 command\n");
-			/* Trapped write data */
-			data = pcr_read32(PID_PSTH, PCR_PSTH_TRPD);
 			data &= mask;
 		}
 	}
@@ -119,11 +129,9 @@ void smihandler_southbridge_monitor(
 	printk(BIOS_DEBUG, "  AHBE = %x\n", (trap_cycle >> 16) & 0xf);
 	printk(BIOS_DEBUG, "  MASK = 0x%08x\n", mask);
 	printk(BIOS_DEBUG, "  read/write: %s\n",
-		(trap_cycle & (1 << 24)) ? "read" : "write");
+		(write) ? "write" : "read");
 
-	if (!(trap_cycle & (1 << 24))) {
-		/* Write Cycle */
-		data = pcr_read32(PID_PSTH, PCR_PSTH_TRPD);
+	if (write) {
 		printk(BIOS_DEBUG, "  iotrap written data = 0x%08x\n", data);
 	}
 #undef IOTRAP

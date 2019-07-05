@@ -50,7 +50,8 @@ uint32_t smihandler_soc_get_sci_mask(void)
 {
 	uint32_t sci_mask =
 		SMI_HANDLER_SCI_EN(APM_STS_BIT) |
-		SMI_HANDLER_SCI_EN(SMI_ON_SLP_EN_STS_BIT);
+		SMI_HANDLER_SCI_EN(SMI_ON_SLP_EN_STS_BIT) |
+		SMI_HANDLER_SCI_EN(MONITOR_STS_BIT);
 
 	return sci_mask;
 }
