@@ -39,6 +39,11 @@ DefinitionBlock(
 			#include <soc/intel/skylake/acpi/systemagent.asl>
 			#include <soc/intel/skylake/acpi/pch.asl>
 			#include "acpi/graphics.asl"
+
+			Device (IMEI)
+			{
+				Name (_ADR, 0x00160000)
+			}
 		}
 
 	}

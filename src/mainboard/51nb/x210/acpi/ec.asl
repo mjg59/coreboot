@@ -67,13 +67,13 @@ Device (EC)
         /* KEY_BRIGHTNESSUP */
         Method (_Q04)
         {
-                Notify(\_SB.PCI0.GFX0.LCD, 0x86)
+                Notify(\_SB.PCI0.IGPU.LCD, 0x86)
         }
 
         /* KEY_BRIGHTNESSDOWN */
         Method (_Q05)
         {
-                Notify(\_SB.PCI0.GFX0.LCD, 0x87)
+                Notify(\_SB.PCI0.IGPU.LCD, 0x87)
         }
 
         /* Battery Information Event */
