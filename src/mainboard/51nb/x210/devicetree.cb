@@ -30,7 +30,7 @@ chip soc/intel/skylake
 	# FSP Configuration
 	register "ProbelessTrace" = "0"
 	register "EnableLan" = "0"
-	register "EnableSata" = "0"   				# Switch this off when only NVME is in use
+	register "EnableSata" = "1"   				
 	register "SataSalpSupport" = "0"
 	register "SataMode" = "0"
 	register "SataPortsEnable[0]" = "1"
@@ -52,7 +52,7 @@ chip soc/intel/skylake
 	register "PttSwitch" = "0"
 	register "SkipExtGfxScan" = "1"
 	register "Device4Enable" = "1"
-	register "HeciEnabled" = "0"				# Switch this off. Linux driver fails anyway..
+	register "HeciEnabled" = "1"				
 	register "SaGv" = "3"
 	register "PmConfigSlpS3MinAssert" = "2"		# 50ms
 	register "PmConfigSlpS4MinAssert" = "1"		# 1s
@@ -169,7 +169,7 @@ chip soc/intel/skylake
 	register "usb2_ports[0]" = "USB2_PORT_MID(OC1)"		# Type-A Port (left)
 	register "usb2_ports[1]" = "USB2_PORT_MID(OC1)"		# Type-A Port (left)
 	register "usb2_ports[5]" = "USB2_PORT_MID(OC1)"		# Type-A Port (right)
-	# register "usb2_ports[6]" = "USB2_PORT_FLEX(OC2)"	# webcam  -- 13" x210 and X210s don't have one
+	register "usb2_ports[6]" = "USB2_PORT_FLEX(OC2)"	# webcam  -- some variants (13" x210 and X210s) don't have one
 	register "usb2_ports[7]" = "USB2_PORT_FLEX(OC2)"	# WiFi PCIe port USB
 
 	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC1)"	# Type-A Port (left)
