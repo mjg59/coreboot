@@ -5,7 +5,9 @@ chip soc/intel/skylake
 	register "deep_s3_enable_dc" = "1"
 	register "deep_s5_enable_ac" = "1"
 	register "deep_s5_enable_dc" = "1"
-	# register "deep_sx_config" = "DSX_EN_LAN_WAKE_PIN" # We don't want no LAN wakeup
+	
+	# Disable LAN wakeup pin
+	# register "deep_sx_config" = "DSX_EN_LAN_WAKE_PIN" 
 
 	register "eist_enable" = "1"
 
@@ -25,7 +27,7 @@ chip soc/intel/skylake
 	register "speed_shift_enable" = "1"
 
 	# Disable DPTF
-	register "dptf_enable" = "1"
+	register "dptf_enable" = "0"
 
 	# Enable s0ix
 	register "s0ix_enable" = "1"
@@ -39,8 +41,8 @@ chip soc/intel/skylake
 	register "SataPortsEnable[0]" = "1"
 	register "SataPortsEnable[1]" = "1"
 	register "SataPortsEnable[2]" = "1"
-	register "SataPortsDevSlp[0]" = "0"
-	register "SataPortsDevSlp[2]" = "0"
+	register "SataPortsDevSlp[0]" = "1"
+	register "SataPortsDevSlp[2]" = "1"
 	register "SataPwrOptEnable" = "1"
 	# register "SataSpeedLimit" = "2"
 	register "EnableAzalia" = "1"
@@ -63,7 +65,9 @@ chip soc/intel/skylake
 	register "PmConfigSlpSusMinAssert" = "3"	# 500ms
 	register "PmConfigSlpAMinAssert" = "3"		# 2s
 	register "PmTimerDisabled" = "0"
-	register "PmConfigPciClockRun" = "1"		# Enable PCICLKRUN
+	
+	# Enable PCICLKRUN - AFAIK this stops the PCI clocks when idle and helps save power
+	register "PmConfigPciClockRun" = "1"
 	
 	register "serirq_mode" = "SERIRQ_CONTINUOUS"
 
@@ -151,23 +155,23 @@ chip soc/intel/skylake
 	}"
 
 	# Enable Root Ports 3, 4 and 9
-	register "PcieRpEnable[2]" = "1"			# LAN card
+	register "PcieRpEnable[2]" = "1"				# LAN card
 	register "PcieRpClkReqSupport[2]" = "1"			# CLKREQ# enables L1 substates 
 	register "PcieRpClkReqNumber[2]" = "0"			
 	register "PcieRpClkSrcNumber[2]" = "0"
 	register "PcieRpAdvancedErrorReporting[2]" = "1"
 	register "PcieRpLtrEnable[2]" = "1"
 
-	register "PcieRpEnable[3]" = "1"			# WLAN card
+	register "PcieRpEnable[3]" = "1"				# WLAN card
 	register "PcieRpClkReqSupport[3]" = "1"
 	register "PcieRpClkReqNumber[3]" = "1"			
 	register "PcieRpClkSrcNumber[3]" = "1"
 	register "PcieRpAdvancedErrorReporting[3]" = "1"
 	register "PcieRpLtrEnable[3]" = "1"
 
-	register "PcieRpEnable[8]" = "1"			# NVME
+	register "PcieRpEnable[8]" = "1"				# NVME
 	register "PcieRpClkReqSupport[8]" = "0"     		# Switching off L1 substates for the nvme port.
-	register "PcieRpClkReqNumber[8]" = "4"			# No number seems to work. (didn't try 4)
+	register "PcieRpClkReqNumber[8]" = "4"		       # No number seems to work. (didn't try 4)
 	register "PcieRpClkSrcNumber[8]" = "4"
 	register "PcieRpAdvancedErrorReporting[8]" = "1"
 	register "PcieRpLtrEnable[8]" = "1"
@@ -202,9 +206,9 @@ chip soc/intel/skylake
 		device pci 00.0 on  end # Host Bridge
 		device pci 02.0 on  end # Integrated Graphics Device
 		device pci 14.0 on  end # USB xHCI
-		device pci 14.1 off end # USB xDCI (OTG) (spento da me)
+		device pci 14.1 off end # USB xDCI (OTG) -- Turn this off
 		device pci 14.2 on  end # Thermal Subsystem
-		device pci 16.0 off end # Management Engine Interface 1  (spenta da me)
+		device pci 16.0 off end # Management Engine Interface 1   -- Turn this off
 		device pci 16.1 off end # Management Engine Interface 2
 		device pci 16.2 off end # Management Engine IDE-R
 		device pci 16.3 off end # Management Engine KT Redirection
@@ -236,7 +240,7 @@ chip soc/intel/skylake
 		device pci 1f.2 on  end # Power Management Controller
 		device pci 1f.3 on  end # Intel HDA
 		device pci 1f.4 on  end # SMBus
-		device pci 1f.5 off end # PCH SPI - Spento da ma. Unclassified non vga device
+		device pci 1f.5 off end # PCH SPI - Turn this off. Shows as "Unclassified non vga device"
 		device pci 1f.6 off end # GbE
 	end
 end
