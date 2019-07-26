@@ -168,7 +168,7 @@ static size_t calculate_reserved_mem_size(uintptr_t dram_base,
 	size_t reserve_mem_size;
 	const struct soc_intel_cannonlake_config *config;
 
-	config = dev->chip_info;
+	config = config_of(dev);
 
 	/* Get PRMRR size */
 	reserve_mem_base -= get_prmrr_size(reserve_mem_base, config);
@@ -219,7 +219,7 @@ static uintptr_t calculate_dram_base(size_t *reserved_mem_size)
 	uintptr_t dram_base;
 	const struct device *dev;
 
-	dev = dev_find_slot(0, PCI_DEVFN(SA_DEV_SLOT_IGD, 0));
+	dev = pcidev_on_root(SA_DEV_SLOT_IGD, 0);
 	if (!dev)
 		die_with_post_code(POST_HW_INIT_FAILURE,
 			"ERROR - IGD device not found!");

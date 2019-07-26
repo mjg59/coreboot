@@ -95,13 +95,6 @@
 #define PCIE4_DEVFN		PCI_DEVFN(PCIE4_DEV, PCIE4_FUNC)
 #define SOC_PCIE4_DEV		_SOC_DEV(PCIE4_DEV, PCIE4_FUNC)
 
-/* Platform Security Processor */
-#define PSP_DEV			0x8
-#define PSP_FUNC		0
-#define PSP_DEVID		0x1578
-#define PSP_DEVFN		PCI_DEVFN(PSP_DEV, PSP_FUNC)
-#define SOC_PSP_DEV		_SOC_DEV(PSP_DEV, PSP_FUNC)
-
 /* HD Audio 1 */
 #define HDA1_DEV		0x9
 #define HDA1_FUNC		2
@@ -151,12 +144,19 @@
 #define NB_DEVFN		PCI_DEVFN(NB_DEV, NB_FUNC)
 #define SOC_NB_DEV		_SOC_DEV(NB_DEV, NB_FUNC)
 
-/* XHCI */
-#define XHCI_DEV		0x10
-#define XHCI_FUNC		0
-#define XHCI_DEVID		0x7914
-#define XHCI_DEVFN		PCI_DEVFN(XHCI_DEV, XHCI_FUNC)
-#define SOC_XHCI_DEV		_SOC_DEV(XHCI_DEV, XHCI_FUNC)
+/* USB 3.1 */
+#define XHCI0_DEV		0x0
+#define XHCI0_FUNC		3
+#define XHCI0_DEVID		0x15e0
+#define XHCI0_DEVFN		PCI_DEVFN(XHCI0_DEV, XHCI0_FUNC)
+#define SOC_XHCI0_DEV		_SOC_DEV(XHCI0_DEV, XHCI0_FUNC)
+
+/* USB 3.1 */
+#define XHCI1_DEV		0x0
+#define XHCI1_FUNC		4
+#define XHCI1_DEVID		0x15e1
+#define XHCI1_DEVFN		PCI_DEVFN(XHCI1_DEV, XHCI1_FUNC)
+#define SOC_XHCI1_DEV		_SOC_DEV(XHCI1_DEV, XHCI1_FUNC)
 
 /* SATA */
 #define SATA_DEV		0x11
@@ -166,13 +166,6 @@
 #define AHCI_DEVID_AMD		0x7904
 #define SATA_DEVFN		PCI_DEVFN(SATA_DEV, SATA_FUNC)
 #define SOC_SATA_DEV		_SOC_DEV(SATA_DEV, SATA_FUNC)
-
-/* EHCI */
-#define EHCI_DEV		0x12
-#define EHCI_FUNC		0
-#define EHCI_DEVID		0x7908
-#define EHCI1_DEVFN		PCI_DEVFN(EHCI_DEV, EHCI_FUNC)
-#define SOC_EHCI1_DEV		_SOC_DEV(EHCI_DEV, EHCI_FUNC)
 
 /* SMBUS */
 #define SMBUS_DEV		0x14
@@ -187,12 +180,5 @@
 #define LPC_DEVID		0x790e
 #define LPC_DEVFN		PCI_DEVFN(PCU_DEV, LPC_FUNC)
 #define SOC_LPC_DEV		_SOC_DEV(PCU_DEV, LPC_FUNC)
-
-/* SD Controller */
-#define SD_DEV			0x14
-#define SD_FUNC			7
-#define SD_DEVID		0x7906
-#define SD_DEVFN		PCI_DEVFN(SD_DEV, SD_FUNC)
-#define SOC_SD_DEV		_SOC_DEV(SD_DEV, SD_FUNC)
 
 #endif /* __PI_PICASSO_PCI_DEVS_H__ */

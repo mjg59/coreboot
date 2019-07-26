@@ -23,7 +23,6 @@
 #include <device/pci_ops.h>
 #include <cbmem.h>
 #include <amdblocks/amd_pci_util.h>
-#include <amdblocks/agesawrapper.h>
 #include <amdblocks/reset.h>
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/lpc.h>
@@ -34,7 +33,6 @@
 #include <soc/amd_pci_int_defs.h>
 #include <delay.h>
 #include <soc/pci_devs.h>
-#include <agesa_headers.h>
 #include <soc/nvs.h>
 #include <types.h>
 
@@ -44,7 +42,7 @@
  * waiting for each device to become available, a single delay will be
  * executed.
  */
-const static struct stoneyridge_aoac aoac_devs[] = {
+const static struct picasso_aoac aoac_devs[] = {
 	{ (FCH_AOAC_D3_CONTROL_UART0 + CONFIG_UART_FOR_CONSOLE * 2),
 		(FCH_AOAC_D3_STATE_UART0 + CONFIG_UART_FOR_CONSOLE * 2) },
 	{ FCH_AOAC_D3_CONTROL_AMBA, FCH_AOAC_D3_STATE_AMBA },
@@ -53,61 +51,6 @@ const static struct stoneyridge_aoac aoac_devs[] = {
 	{ FCH_AOAC_D3_CONTROL_I2C2, FCH_AOAC_D3_STATE_I2C2 },
 	{ FCH_AOAC_D3_CONTROL_I2C3, FCH_AOAC_D3_STATE_I2C3 }
 };
-
-static int is_sata_config(void)
-{
-	return !((SataNativeIde == CONFIG_STONEYRIDGE_SATA_MODE)
-			|| (SataLegacyIde == CONFIG_STONEYRIDGE_SATA_MODE));
-}
-
-static inline int sb_sata_enable(void)
-{
-	/* True if IDE or AHCI. */
-	return (SataNativeIde == CONFIG_STONEYRIDGE_SATA_MODE) ||
-		(SataAhci == CONFIG_STONEYRIDGE_SATA_MODE);
-}
-
-static inline int sb_ide_enable(void)
-{
-	/* True if IDE or LEGACY IDE. */
-	return (SataNativeIde == CONFIG_STONEYRIDGE_SATA_MODE) ||
-		(SataLegacyIde == CONFIG_STONEYRIDGE_SATA_MODE);
-}
-
-void SetFchResetParams(FCH_RESET_INTERFACE *params)
-{
-	const struct device *dev = pcidev_path_on_root(SATA_DEVFN);
-	params->Xhci0Enable = CONFIG(STONEYRIDGE_XHCI_ENABLE);
-	if (dev && dev->enabled) {
-		params->SataEnable = sb_sata_enable();
-		params->IdeEnable = sb_ide_enable();
-	} else {
-		params->SataEnable = FALSE;
-		params->IdeEnable = FALSE;
-	}
-}
-
-void SetFchEnvParams(FCH_INTERFACE *params)
-{
-	const struct device *dev = pcidev_path_on_root(SATA_DEVFN);
-	params->AzaliaController = AzEnable;
-	params->SataClass = CONFIG_STONEYRIDGE_SATA_MODE;
-	if (dev && dev->enabled) {
-		params->SataEnable = is_sata_config();
-		params->IdeEnable = !params->SataEnable;
-		params->SataIdeMode = (CONFIG_STONEYRIDGE_SATA_MODE ==
-					SataLegacyIde);
-	} else {
-		params->SataEnable = FALSE;
-		params->IdeEnable = FALSE;
-		params->SataIdeMode = FALSE;
-	}
-}
-
-void SetFchMidParams(FCH_INTERFACE *params)
-{
-	SetFchEnvParams(params);
-}
 
 /*
  * Table of APIC register index and associated IRQ name. Using IDX_XXX_NAME
@@ -227,7 +170,7 @@ static void sb_lpc_decode(void)
 		| DECODE_ENABLE_ADLIB_PORT;
 
 	/* Decode SIOs at 2E/2F and 4E/4F */
-	if (CONFIG(STONEYRIDGE_LEGACY_FREE))
+	if (CONFIG(PICASSO_LEGACY_FREE))
 		tmp |= DECODE_ALTERNATE_SIO_ENABLE | DECODE_SIO_ENABLE;
 
 	lpc_enable_decode(tmp);
@@ -579,11 +522,7 @@ void southbridge_init(void *chip_info)
 
 static void set_sb_final_nvs(void)
 {
-	uintptr_t amdfw_rom;
-	uintptr_t xhci_fw;
-	uintptr_t fwaddr;
-	size_t fwsize;
-	const struct device *sd, *sata;
+	const struct device *sata;
 
 	struct global_nvs_t *gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
 	if (gnvs == NULL)
@@ -595,29 +534,10 @@ static void set_sb_final_nvs(void)
 	gnvs->aoac.ic3e = is_aoac_device_enabled(FCH_AOAC_D3_STATE_I2C3);
 	gnvs->aoac.ut0e = is_aoac_device_enabled(FCH_AOAC_D3_STATE_UART0);
 	gnvs->aoac.ut1e = is_aoac_device_enabled(FCH_AOAC_D3_STATE_UART1);
-	gnvs->aoac.ehce = is_aoac_device_enabled(FCH_AOAC_D3_STATE_USB2);
-	gnvs->aoac.xhce = is_aoac_device_enabled(FCH_AOAC_D3_STATE_USB3);
 	/* Rely on these being in sync with devicetree */
-	sd = pcidev_path_on_root(SD_DEVFN);
-	gnvs->aoac.sd_e = sd && sd->enabled ? 1 : 0;
 	sata = pcidev_path_on_root(SATA_DEVFN);
 	gnvs->aoac.st_e = sata && sata->enabled ? 1 : 0;
 	gnvs->aoac.espi = 1;
-
-	amdfw_rom = 0x20000 - (0x80000 << CONFIG_AMD_FWM_POSITION_INDEX);
-	xhci_fw = read32((void *)(amdfw_rom + XHCI_FW_SIG_OFFSET));
-
-	fwaddr = 2 + read16((void *)(xhci_fw + XHCI_FW_ADDR_OFFSET
-			+ XHCI_FW_BOOTRAM_SIZE));
-	fwsize = read16((void *)(xhci_fw + XHCI_FW_SIZE_OFFSET
-			+ XHCI_FW_BOOTRAM_SIZE));
-	gnvs->fw00 = 0;
-	gnvs->fw01 = ((32 * KiB) << 16) + 0;
-	gnvs->fw02 = fwaddr + XHCI_FW_BOOTRAM_SIZE;
-	gnvs->fw03 = fwsize << 16;
-
-	gnvs->eh10 = pci_read_config32(SOC_EHCI1_DEV, PCI_BASE_ADDRESS_0)
-			& ~PCI_BASE_ADDRESS_MEM_ATTR_MASK;
 }
 
 void southbridge_final(void *chip_info)

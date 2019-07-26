@@ -13,16 +13,8 @@ ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smmrelocate.c
 romstage-$(CONFIG_CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM) += stage_cache.c
 postcar-$(CONFIG_CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM) += stage_cache.c
 
-smm-$(CONFIG_HAVE_SMI_HANDLER) += finalize.c
-smm-$(CONFIG_HAVE_SMI_HANDLER) += tsc_freq.c
-
-ifneq ($(CONFIG_TSC_MONOTONIC_TIMER),y)
-bootblock-y += monotonic_timer.c
-romstage-y += monotonic_timer.c
-postcar-y += monotonic_timer.c
-ramstage-y += monotonic_timer.c
-smm-y += monotonic_timer.c
-endif
+smm-y += finalize.c
+smm-y += tsc_freq.c
 
 bootblock-y += ../car/non-evict/cache_as_ram.S
 bootblock-y += ../car/bootblock.c
@@ -43,5 +35,5 @@ subdirs-y += ../microcode
 subdirs-y += ../turbo
 subdirs-y += ../common
 
-cpu_microcode_bins += 3rdparty/blobs/cpu/intel/model_306cx/microcode.bin
-cpu_microcode_bins += 3rdparty/blobs/cpu/intel/model_4065x/microcode.bin
+cpu_microcode_bins += $(wildcard 3rdparty/intel-microcode/intel-ucode/06-3c-*)
+cpu_microcode_bins += $(wildcard 3rdparty/intel-microcode/intel-ucode/06-45-*)

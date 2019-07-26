@@ -32,10 +32,7 @@ decompressor-y += memcmp.c
 decompressor-y += prog_ops.c
 decompressor-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 
-ifneq ($(CONFIG_BOOTBLOCK_CUSTOM),y)
 bootblock-y += bootblock.c
-endif
-
 bootblock-y += prog_loaders.c
 bootblock-y += prog_ops.c
 bootblock-y += cbfs.c
@@ -89,9 +86,7 @@ ramstage-y += region_file.c
 romstage-y += region_file.c
 ramstage-y += romstage_handoff.c
 romstage-y += romstage_handoff.c
-romstage-y += romstage_stack.c
 romstage-y += selfboot.c
-ramstage-y += romstage_stack.c
 romstage-y += stack.c
 ramstage-y += rtc.c
 
@@ -119,7 +114,6 @@ ramstage-y += fmap.c
 ramstage-y += memchr.c
 ramstage-y += memcmp.c
 ramstage-y += malloc.c
-smm-$(CONFIG_SMM_TSEG) += malloc.c
 ramstage-y += dimm_info_util.c
 ramstage-y += delay.c
 ramstage-y += fallback_boot.c
@@ -192,6 +186,7 @@ romstage-y += boot_device.c
 ramstage-y += boot_device.c
 
 smm-y += boot_device.c
+smm-y += malloc.c
 smm-y += delay.c
 smm-y += fmap.c
 smm-y += cbfs.c memcmp.c

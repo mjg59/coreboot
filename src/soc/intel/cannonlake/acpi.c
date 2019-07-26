@@ -144,8 +144,9 @@ acpi_cstate_t *soc_get_cstate_map(size_t *entries)
 				ARRAY_SIZE(cstate_set_non_s0ix))];
 	int *set;
 	int i;
-	struct device *dev = SA_DEV_ROOT;
-	config_t *config = dev->chip_info;
+
+	config_t *config = config_of_path(SA_DEVFN_ROOT);
+
 	int is_s0ix_enable = config->s0ix_enable;
 
 	if (is_s0ix_enable) {
@@ -165,18 +166,18 @@ acpi_cstate_t *soc_get_cstate_map(size_t *entries)
 
 void soc_power_states_generation(int core_id, int cores_per_package)
 {
-	struct device *dev = SA_DEV_ROOT;
-	config_t *config = dev->chip_info;
+	config_t *config = config_of_path(SA_DEVFN_ROOT);
+
+	/* Generate P-state tables */
 	if (config->eist_enable)
-		/* Generate P-state tables */
 		generate_p_state_entries(core_id, cores_per_package);
 }
 
 void soc_fill_fadt(acpi_fadt_t *fadt)
 {
 	const uint16_t pmbase = ACPI_BASE_ADDRESS;
-	const struct device *dev = PCH_DEV_LPC;
-	const struct soc_intel_cannonlake_config *config = dev->chip_info;
+	const struct soc_intel_cannonlake_config *config;
+	config = config_of_path(PCH_DEVFN_LPC);
 
 	if (!config->PmTimerDisabled) {
 		fadt->pm_tmr_blk = pmbase + PM1_TMR;
@@ -200,8 +201,8 @@ uint32_t soc_read_sci_irq_select(void)
 
 void acpi_create_gnvs(struct global_nvs_t *gnvs)
 {
-	const struct device *dev = PCH_DEV_LPC;
-	const struct soc_intel_cannonlake_config *config = dev->chip_info;
+	const struct soc_intel_cannonlake_config *config;
+	config = config_of_path(PCH_DEVFN_LPC);
 
 	/* Set unknown wake source */
 	gnvs->pm1i = -1;
@@ -209,9 +210,9 @@ void acpi_create_gnvs(struct global_nvs_t *gnvs)
 	/* CPU core count */
 	gnvs->pcnt = dev_count_cpu();
 
-	if (CONFIG(CONSOLE_CBMEM))
 	/* Update the mem console pointer. */
-	gnvs->cbmc = (uintptr_t)cbmem_find(CBMEM_ID_CONSOLE);
+	if (CONFIG(CONSOLE_CBMEM))
+		gnvs->cbmc = (uintptr_t)cbmem_find(CBMEM_ID_CONSOLE);
 
 	if (CONFIG(CHROMEOS)) {
 		/* Initialize Verified Boot data */
@@ -293,7 +294,7 @@ int acpigen_soc_clear_tx_gpio(unsigned int gpio_num)
 
 static unsigned long soc_fill_dmar(unsigned long current)
 {
-	struct device *const igfx_dev = dev_find_slot(0, SA_DEVFN_IGD);
+	struct device *const igfx_dev = pcidev_path_on_root(SA_DEVFN_IGD);
 	uint64_t gfxvtbar = MCHBAR64(GFXVTBAR) & VTBAR_MASK;
 	bool gfxvten = MCHBAR32(GFXVTBAR) & VTBAR_ENABLED;
 
@@ -306,7 +307,7 @@ static unsigned long soc_fill_dmar(unsigned long current)
 		acpi_dmar_drhd_fixup(tmp, current);
 	}
 
-	struct device *const ipu_dev = dev_find_slot(0, SA_DEVFN_IPU);
+	struct device *const ipu_dev = pcidev_path_on_root(SA_DEVFN_IPU);
 	uint64_t ipuvtbar = MCHBAR64(IPUVTBAR) & VTBAR_MASK;
 	bool ipuvten = MCHBAR32(IPUVTBAR) & VTBAR_ENABLED;
 

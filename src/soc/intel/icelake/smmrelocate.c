@@ -31,8 +31,8 @@
 #include <soc/msr.h>
 #include <soc/pci_devs.h>
 #include <soc/smm.h>
+#include <soc/soc_chip.h>
 #include <soc/systemagent.h>
-#include "chip.h"
 
 /* This gets filled in and used during relocation. */
 static struct smm_relocation_params smm_reloc_params;
@@ -255,7 +255,7 @@ static void setup_ied_area(struct smm_relocation_params *params)
 void smm_info(uintptr_t *perm_smbase, size_t *perm_smsize,
 				size_t *smm_save_state_size)
 {
-	struct device *dev = SA_DEV_ROOT;
+	struct device *dev = pcidev_path_on_root(SA_DEVFN_ROOT);
 
 	printk(BIOS_DEBUG, "Setting up SMI for CPU\n");
 
@@ -300,11 +300,12 @@ void smm_relocate(void)
 
 void smm_lock(void)
 {
+	struct device *sa_dev = pcidev_path_on_root(SA_DEVFN_ROOT);
 	/*
 	 * LOCK the SMM memory window and enable normal SMM.
 	 * After running this function, only a full reset can
 	 * make the SMM registers writable again.
 	 */
 	printk(BIOS_DEBUG, "Locking SMM.\n");
-	pci_write_config8(SA_DEV_ROOT, SMRAM, D_LCK | G_SMRAME | C_BASE_SEG);
+	pci_write_config8(sa_dev, SMRAM, D_LCK | G_SMRAME | C_BASE_SEG);
 }

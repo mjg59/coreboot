@@ -31,14 +31,14 @@ ramstage-y += iou_complto.c
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smmrelocate.c
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += pmutil.c
 ramstage-y += vtd.c
-smm-$(CONFIG_HAVE_SMI_HANDLER) += pmutil.c
-smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
-smm-$(CONFIG_HAVE_SMI_HANDLER) += tsc_freq.c
+smm-y += pmutil.c
+smm-y += smihandler.c
+smm-y += tsc_freq.c
 
 CPPFLAGS_common += -I$(src)/soc/intel/fsp_broadwell_de/include
 CPPFLAGS_common += -I$(src)/soc/intel/fsp_broadwell_de/fsp
 CPPFLAGS_common += -I$(src)/soc/intel/fsp_broadwell_de/
 
-cpu_microcode_bins += 3rdparty/blobs/cpu/intel/model_5066x/microcode.bin
+cpu_microcode_bins += $(wildcard 3rdparty/intel-microcode/intel-ucode/06-56-*)
 
 endif # ifeq ($(CONFIG_SOC_INTEL_FSP_BROADWELL_DE),y)
