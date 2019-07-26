@@ -158,7 +158,7 @@ asmlinkage void car_stage_entry(void)
 	pmc_set_disb();
 	if (!s3wake)
 		save_dimm_info();
-	if (postcar_frame_init(&pcf, 8*KiB))
+	if (postcar_frame_init(&pcf, 0))
 		die("Unable to initialize postcar frame.\n");
 
 	/*
@@ -223,7 +223,7 @@ static void soc_peg_init_params(FSP_M_CONFIG *m_cfg,
 	 * If PEG port is not defined in the device tree, it will be disabled
 	 * in FSP
 	 */
-	dev = SA_DEV_PEG0; /* PEG 0:1:0 */
+	dev = pcidev_on_root(SA_DEV_SLOT_PEG, 0); /* PEG 0:1:0 */
 	if (!dev || !dev->enabled)
 		m_cfg->Peg0Enable = 0;
 	else if (dev->enabled) {
@@ -238,7 +238,7 @@ static void soc_peg_init_params(FSP_M_CONFIG *m_cfg,
 		m_t_cfg->Peg0Gen3EqPh3Method = 0;
 	}
 
-	dev = SA_DEV_PEG1; /* PEG 0:1:1 */
+	dev = pcidev_on_root(SA_DEV_SLOT_PEG, 1); /* PEG 0:1:1 */
 	if (!dev || !dev->enabled)
 		m_cfg->Peg1Enable = 0;
 	else if (dev->enabled) {
@@ -250,7 +250,7 @@ static void soc_peg_init_params(FSP_M_CONFIG *m_cfg,
 		m_t_cfg->Peg1Gen3EqPh3Method = 0;
 	}
 
-	dev = SA_DEV_PEG2; /* PEG 0:1:2 */
+	dev = pcidev_on_root(SA_DEV_SLOT_PEG, 2); /* PEG 0:1:2 */
 	if (!dev || !dev->enabled)
 		m_cfg->Peg2Enable = 0;
 	else if (dev->enabled) {
@@ -301,7 +301,7 @@ static void soc_primary_gfx_config_params(FSP_M_CONFIG *m_cfg,
 {
 	const struct device *dev;
 
-	dev = dev_find_slot(0, SA_DEVFN_IGD);
+	dev = pcidev_path_on_root(SA_DEVFN_IGD);
 	if (!dev || !dev->enabled) {
 		/*
 		 * If iGPU is disabled or not defined in the devicetree.cb,
@@ -326,13 +326,11 @@ static void soc_primary_gfx_config_params(FSP_M_CONFIG *m_cfg,
 
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 {
-	const struct device *dev;
 	const struct soc_intel_skylake_config *config;
 	FSP_M_CONFIG *m_cfg = &mupd->FspmConfig;
 	FSP_M_TEST_CONFIG *m_t_cfg = &mupd->FspmTestConfig;
 
-	dev = dev_find_slot(0, PCI_DEVFN(PCH_DEV_SLOT_LPC, 0));
-	config = dev->chip_info;
+	config = config_of_path(PCH_DEVFN_LPC);
 
 	soc_memory_init_params(m_cfg, config);
 	soc_peg_init_params(m_cfg, m_t_cfg, config);

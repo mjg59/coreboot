@@ -90,7 +90,7 @@ acpi_cstate_t *soc_get_cstate_map(size_t *entries)
 void acpi_create_gnvs(struct global_nvs_t *gnvs)
 {
 	struct soc_intel_apollolake_config *cfg;
-	struct device *dev = SA_DEV_ROOT;
+	cfg = config_of_path(SA_DEVFN_ROOT);
 
 	/* Clear out GNVS. */
 	memset(gnvs, 0, sizeof(*gnvs));
@@ -109,12 +109,6 @@ void acpi_create_gnvs(struct global_nvs_t *gnvs)
 
 	/* CPU core count */
 	gnvs->pcnt = dev_count_cpu();
-
-	if (!dev || !dev->chip_info) {
-		printk(BIOS_ERR, "BUG! Could not find SOC devicetree config\n");
-		return;
-	}
-	cfg = dev->chip_info;
 
 	/* Enable DPTF based on mainboard configuration */
 	gnvs->dpte = cfg->dptf_enable;
@@ -158,7 +152,7 @@ int soc_madt_sci_irq_polarity(int sci)
 void soc_fill_fadt(acpi_fadt_t *fadt)
 {
 	const struct soc_intel_apollolake_config *cfg;
-	struct device *dev = SA_DEV_ROOT;
+	cfg = config_of_path(SA_DEVFN_ROOT);
 
 	fadt->pm_tmr_blk = ACPI_BASE_ADDRESS + PM1_TMR;
 
@@ -174,19 +168,14 @@ void soc_fill_fadt(acpi_fadt_t *fadt)
 	fadt->x_pm_tmr_blk.bit_width = fadt->pm_tmr_len * 8;
 	fadt->x_pm_tmr_blk.addrl = ACPI_BASE_ADDRESS + PM1_TMR;
 
-	if (!dev || !dev->chip_info) {
-		printk(BIOS_ERR, "BUG! Could not find SOC devicetree config\n");
-		return;
-	}
-	cfg = dev->chip_info;
 
-	if(cfg->lpss_s0ix_enable)
+	if (cfg->lpss_s0ix_enable)
 		fadt->flags |= ACPI_FADT_LOW_PWR_IDLE_S0;
 }
 
 static unsigned long soc_fill_dmar(unsigned long current)
 {
-	struct device *const igfx_dev = dev_find_slot(0, SA_DEVFN_IGD);
+	struct device *const igfx_dev = pcidev_path_on_root(SA_DEVFN_IGD);
 	uint64_t gfxvtbar = MCHBAR64(GFXVTBAR) & VTBAR_MASK;
 	uint64_t defvtbar = MCHBAR64(DEFVTBAR) & VTBAR_MASK;
 	bool gfxvten = MCHBAR32(GFXVTBAR) & VTBAR_ENABLED;
@@ -219,7 +208,7 @@ static unsigned long soc_fill_dmar(unsigned long current)
 		 * get the info and hide it again when done.
 		 */
 		p2sb_unhide();
-		struct device *p2sb_dev = dev_find_slot(0, PCH_DEVFN_P2SB);
+		struct device *p2sb_dev = pcidev_path_on_root(PCH_DEVFN_P2SB);
 		uint16_t ibdf = pci_read_config16(p2sb_dev, PCH_P2SB_IBDF);
 		uint16_t hbdf = pci_read_config16(p2sb_dev, PCH_P2SB_HBDF);
 		p2sb_hide();

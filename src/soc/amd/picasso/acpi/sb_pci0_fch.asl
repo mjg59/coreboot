@@ -53,21 +53,6 @@ Device(SBUS) {
 /* 0:14.3 - LPC */
 #include <soc/amd/common/acpi/lpc.asl>
 
-/* 0:14.7 - SD Controller */
-Device(SDCN) {
-	Name(_ADR, 0x00140007)
-
-	Method(_PS0) {
-		FDDC(24, 0)
-	}
-	Method(_PS3) {
-		FDDC(24, 3)
-	}
-	Method(_PSC) {
-		Return(SDTD)
-	}
-} /* end SDCN */
-
 Name(CRES, ResourceTemplate() {
 	/* Set the Bus number and Secondary Bus number for the PCI0 device
 	 * The Secondary bus range for PCI0 lets the system
@@ -208,27 +193,6 @@ Field( SMIC, ByteAcc, NoLock, Preserve) {
 	U2RP, 1,  /* Usb2 Ref Clock Powerdown */
 	U3RP, 1,  /* Usb3 Ref Clock Powerdown */
 
-	/* XHCI_PM registers */
-	offset (0x1c00),
-	, 1,
-	,6,
-	U3PY, 1,
-	, 7,
-	UD3P, 1,  /* bit 15 */
-	U3PR, 1,  /* bit 16 */
-	, 11,
-	FWLM, 1,  /* FirmWare Load Mode  */
-	FPLS, 1,  /* Fw PreLoad Start    */
-	FPLC, 1,  /* Fw PreLoad Complete */
-
-	offset (0x1c04),
-	UA04, 16,
-	, 15,
-	ROAM, 1,  /* 1= ROM 0=RAM */
-
-	offset (0x1c08),
-	UA08, 32,
-
 	/* AOAC Registers */
 	offset (0x1e4a), /* I2C0 D3 Control */
 	I0TD, 2,
@@ -292,15 +256,6 @@ Field( SMIC, ByteAcc, NoLock, Preserve) {
 	U3PD, 1,
 	offset (0x1e6f), /* USB3 D3 State */
 	U3DS, 3,
-
-	offset (0x1e70), /* SD D3 Control */
-	SDTD, 2,
-	, 1,
-	SDPD, 1,
-	, 1,
-	, 1,
-	SDRT, 1,
-	SDSC, 1,
 
 	offset (0x1e71), /* SD D3 State */
 	SDDS, 3,
@@ -442,16 +397,6 @@ Method(FDDC, 2, Serialized)
 				}
 			}
 /* todo			Case(15) { STD0()} */ /* SATA */
-			Case(18) { U2D0()} /* EHCI */
-			Case(23) { U3D0()} /* XHCI */
-			Case(24) { /* SD */
-				Store(0x00, SDTD)
-				Store(One, SDPD)
-				Store(SDDS, Local0)
-				while(LNotEqual(Local0,0x7)) {
-					Store(SDDS, Local0)
-				}
-			}
 		}
 	} else {
 		/* put device into D3cold */
@@ -505,22 +450,6 @@ Method(FDDC, 2, Serialized)
 				Store(0x03, U1TD)
 			}
 /* todo			Case(15) { STD3()} */ /* SATA */
-			Case(18) { U2D3()} /* EHCI */
-			Case(23) { U3D3()} /* XHCI */
-			Case(24) { /* SD */
-				Store(Zero, SDPD)
-				Store(SDDS, Local0)
-				while(LNotEqual(Local0,0x0)) {
-					Store(SDDS, Local0)
-				}
-				Store(0x03, SDTD)
-			}
-		}
-		/* Turn off Power */
-		if(LEqual(I0TD, 3)) {
-			if(LEqual(SATD, 3)) {
-				if(LEqual(SDTD, 3)) { Store(Zero, PG1A) }
-			}
 		}
 		if(LEqual(I1TD, 3)) {
 			if(LEqual(I2TD, 3)) {
@@ -541,26 +470,10 @@ Method(FDDC, 2, Serialized)
 
 Method(FPTS,0, Serialized)  /* FCH _PTS */
 {
-	if(LEqual(\XHCE, one)) {
-		if(LNotEqual(U3TD, 0x03)) {
-			FDDC(23, 3)
-		}
-	}
-	if(LNotEqual(U2TD, 0x03)) {
-		FDDC(18, 3)
-	}
 }
 
 Method(FWAK,0, Serialized)  /* FCH _WAK */
 {
-	if(LEqual(\XHCE, one)) {
-		if(LEqual(U3TD, 0x03)) {
-			FDDC(23, 0)
-		}
-	}
-	if(LEqual(U2TD, 0x03)) {
-		FDDC(18, 0)
-	}
 	if(LEqual(\UT0E, zero)) {
 		if(LNotEqual(U0TD, 0x03)) {
 			FDDC(11, 3)

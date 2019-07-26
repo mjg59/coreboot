@@ -401,7 +401,7 @@ endif
 
 CFLAGS_common += -pipe -g -nostdinc -std=gnu11
 CFLAGS_common += -nostdlib -Wall -Wundef -Wstrict-prototypes -Wmissing-prototypes
-CFLAGS_common += -Wwrite-strings -Wredundant-decls -Wno-trigraphs
+CFLAGS_common += -Wwrite-strings -Wredundant-decls -Wno-trigraphs -Wimplicit-fallthrough
 CFLAGS_common += -Wstrict-aliasing -Wshadow -Wdate-time -Wtype-limits
 CFLAGS_common += -fno-common -ffreestanding -fno-builtin -fomit-frame-pointer
 CFLAGS_common += -ffunction-sections -fdata-sections -fno-pie
@@ -514,6 +514,7 @@ FMAPTOOL:=$(objutil)/cbfstool/fmaptool
 RMODTOOL:=$(objutil)/cbfstool/rmodtool
 IFWITOOL:=$(objutil)/cbfstool/ifwitool
 IFITTOOL:=$(objutil)/cbfstool/ifittool
+AMDCOMPRESS:=$(objutil)/cbfstool/amdcompress
 
 $(obj)/cbfstool: $(CBFSTOOL)
 	cp $< $@
@@ -528,6 +529,9 @@ $(obj)/ifwitool: $(IFWITOOL)
 	cp $< $@
 
 $(obj)/ifittool: $(IFITTOOL)
+	cp $< $@
+
+$(obj)/amdcompress: $(AMDCOMPRESS)
 	cp $< $@
 
 _WINCHECK=$(shell uname -o 2> /dev/null)
@@ -642,7 +646,7 @@ install-git-commit-clangfmt:
 include util/crossgcc/Makefile.inc
 
 .PHONY: tools
-tools: $(objutil)/kconfig/conf $(CBFSTOOL) $(objutil)/cbfstool/cbfs-compression-tool $(FMAPTOOL) $(RMODTOOL) $(IFWITOOL) $(objutil)/nvramtool/nvramtool $(ROMCC_BIN) $(objutil)/sconfig/sconfig $(IFDTOOL) $(CBOOTIMAGE) $(AMDFWTOOL) $(FUTILITY) $(BINCFG) $(IFITTOOL)
+tools: $(objutil)/kconfig/conf $(CBFSTOOL) $(objutil)/cbfstool/cbfs-compression-tool $(FMAPTOOL) $(RMODTOOL) $(IFWITOOL) $(objutil)/nvramtool/nvramtool $(ROMCC_BIN) $(objutil)/sconfig/sconfig $(IFDTOOL) $(CBOOTIMAGE) $(AMDFWTOOL) $(AMDCOMPRESS) $(FUTILITY) $(BINCFG) $(IFITTOOL)
 
 ###########################################################################
 # Common recipes for all stages

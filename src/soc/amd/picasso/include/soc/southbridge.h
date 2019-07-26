@@ -178,31 +178,6 @@
 #define   OSCOUT1_CLK_OUTPUT_ENB	BIT(2)  /* 0 = Enabled, 1 = Disabled */
 #define   OSCOUT2_CLK_OUTPUT_ENB	BIT(7)  /* 0 = Enabled, 1 = Disabled */
 
-/* XHCI_PM Registers:  0xfed81c00 */
-#define XHCI_PM_INDIRECT_INDEX		0x48
-#define XHCI_PM_INDIRECT_DATA		0x4c
-#define   XHCI_OVER_CURRENT_CONTROL	0x30
-#define     USB_OC0			0
-#define     USB_OC1			1
-#define     USB_OC2			2
-#define     USB_OC3			3
-#define     USB_OC4			4
-#define     USB_OC5			5
-#define     USB_OC6			6
-#define     USB_OC7			7
-#define     USB_OC_DISABLE		0xf
-#define     USB_OC_DISABLE_ALL		0xffff
-#define     OC_PORT0_SHIFT		0
-#define     OC_PORT1_SHIFT		4
-#define     OC_PORT2_SHIFT		8
-#define     OC_PORT3_SHIFT		12
-
-#define EHCI_OVER_CURRENT_CONTROL	0x70
-#define EHCI_HUB_CONFIG4		0x90
-#define   DEBUG_PORT_SELECT_SHIFT	  16
-#define   DEBUG_PORT_ENABLE		  BIT(18)
-#define   DEBUG_PORT_MASK		(BIT(16) | BIT(17) | BIT(18))
-
 /* FCH AOAC Registers 0xfed81e00 */
 #define FCH_AOAC_D3_CONTROL_CLK_GEN	0x40
 #define FCH_AOAC_D3_CONTROL_I2C0	0x4a
@@ -212,8 +187,6 @@
 #define FCH_AOAC_D3_CONTROL_UART0	0x56
 #define FCH_AOAC_D3_CONTROL_UART1	0x58
 #define FCH_AOAC_D3_CONTROL_AMBA	0x62
-#define FCH_AOAC_D3_CONTROL_USB2	0x64
-#define FCH_AOAC_D3_CONTROL_USB3	0x6e
 /* Bit definitions for all FCH_AOAC_D3_CONTROL_* Registers */
 #define   FCH_AOAC_TARGET_DEVICE_STATE (BIT(0) + BIT(1))
 #define   FCH_AOAC_DEVICE_STATE		BIT(2)
@@ -231,8 +204,6 @@
 #define FCH_AOAC_D3_STATE_UART0		0x57
 #define FCH_AOAC_D3_STATE_UART1		0x59
 #define FCH_AOAC_D3_STATE_AMBA		0x63
-#define FCH_AOAC_D3_STATE_USB2		0x65
-#define FCH_AOAC_D3_STATE_USB3		0x6f
 /* Bit definitions for all FCH_AOAC_D3_STATE_* Registers */
 #define   FCH_AOAC_PWR_RST_STATE	BIT(0)
 #define   FCH_AOAC_RST_CLK_OK_STATE	BIT(1)
@@ -253,9 +224,6 @@
 /* Register in AHCIBaseAddress (BAR5 at D11F0x24) */
 #define SATA_CAPABILITIES_REG		0xfc
 #define SATA_CAPABILITY_SPM		BIT(12)
-
-/* SPI Controller (base address in D14F3xA0) */
-#define SPI_BASE_ALIGNMENT		BIT(6)
 
 #define SPI_CNTRL0			0x00
 #define   SPI_BUSY			BIT(31)
@@ -306,17 +274,12 @@
 #define SPI100_HOST_PREF_CONFIG		0x2c
 #define   SPI_RD4DW_EN_HOST		BIT(15)
 
-/* Platform Security Processor D8F0 */
-#define PSP_MAILBOX_BAR			PCI_BASE_ADDRESS_4 /* BKDG: "BAR3" */
-#define PSP_BAR_ENABLES			0x48
-#define  PSP_MAILBOX_BAR_EN		0x10
-
 /* IO 0xcf9 - Reset control port*/
 #define   FULL_RST			BIT(3)
 #define   RST_CMD			BIT(2)
 #define   SYS_RST			BIT(1)
 
-struct stoneyridge_aoac {
+struct picasso_aoac {
 	int enable;
 	int status;
 };
@@ -332,12 +295,7 @@ typedef struct aoac_devs {
 	unsigned int ut1e:1; /* 12: UART1 */
 	unsigned int :2;
 	unsigned int st_e:1; /* 15: SATA */
-	unsigned int :2;
-	unsigned int ehce:1; /* 18: EHCI */
-	unsigned int :4;
-	unsigned int xhce:1; /* 23: xHCI */
-	unsigned int sd_e:1; /* 24: SDIO */
-	unsigned int :2;
+	unsigned int :11;
 	unsigned int espi:1; /* 27: ESPI */
 	unsigned int :4;
 } __packed aoac_devs_t;
@@ -350,11 +308,6 @@ struct soc_power_reg {
 	uint16_t wake_from;
 };
 
-#define XHCI_FW_SIG_OFFSET			0xc
-#define XHCI_FW_ADDR_OFFSET			0x6
-#define XHCI_FW_SIZE_OFFSET			0x8
-#define XHCI_FW_BOOTRAM_SIZE			0x8000
-
 void enable_aoac_devices(void);
 void sb_clk_output_48Mhz(u32 osc);
 void sb_disable_4dw_burst(void);
@@ -366,7 +319,7 @@ void sb_set_spi100(u16 norm, u16 fast, u16 alt, u16 tpm);
 void bootblock_fch_early_init(void);
 void bootblock_fch_init(void);
 /**
- * @brief Save the UMA bize returned by AGESA
+ * @brief Save the UMA bize
  *
  * @param size = in bytes
  *
@@ -374,7 +327,7 @@ void bootblock_fch_init(void);
  */
 void save_uma_size(uint32_t size);
 /**
- * @brief Save the UMA base address returned by AGESA
+ * @brief Save the UMA base address
  *
  * @param base = 64bit base address
  *
@@ -403,8 +356,9 @@ uint64_t get_uma_base(void);
  * a default weak function in usb.c if the mainboard doesn't have any
  * over current support.
  */
-int mainboard_get_xhci_oc_map(uint16_t *usb_oc_map);
-int mainboard_get_ehci_oc_map(uint16_t *usb_oc_map);
+#define     USB_OC_DISABLE_ALL		0xffff
+int mainboard_get_xhci0_oc_map(uint16_t *usb_oc_map);
+int mainboard_get_xhci1_oc_map(uint16_t *usb_oc_map);
 
 /* Initialize all the i2c buses that are marked with early init. */
 void i2c_soc_early_init(void);

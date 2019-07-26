@@ -25,21 +25,17 @@
 #include <soc/northbridge.h>
 #include <soc/pci_devs.h>
 #include <soc/southbridge.h>
-#include <amdblocks/psp.h>
-#include <amdblocks/agesawrapper.h>
-#include <amdblocks/agesawrapper_call.h>
-
 #include "chip.h"
 
 /* Supplied by i2c.c */
-extern struct device_operations stoneyridge_i2c_mmio_ops;
+extern struct device_operations picasso_i2c_mmio_ops;
 extern const char *i2c_acpi_name(const struct device *dev);
 
 struct device_operations cpu_bus_ops = {
 	.read_resources	  = DEVICE_NOOP,
 	.set_resources	  = DEVICE_NOOP,
 	.enable_resources = DEVICE_NOOP,
-	.init		  = stoney_init_cpus,
+	.init		  = picasso_init_cpus,
 	.acpi_fill_ssdt_generator = generate_cpu_entries,
 };
 
@@ -96,18 +92,16 @@ const char *soc_acpi_name(const struct device *dev)
 		return "PBR8";
 	case HDA1_DEVFN:
 		return "AZHD";
-	case EHCI1_DEVFN:
-		return "EHC0";
 	case LPC_DEVFN:
 		return "LPCB";
 	case SATA_DEVFN:
 		return "STCR";
-	case SD_DEVFN:
-		return "SDCN";
 	case SMBUS_DEVFN:
 		return "SBUS";
-	case XHCI_DEVFN:
+	case XHCI0_DEVFN:
 		return "XHC0";
+	case XHCI1_DEVFN:
+		return "XHC1";
 	default:
 		return NULL;
 	}
@@ -116,7 +110,6 @@ const char *soc_acpi_name(const struct device *dev)
 struct device_operations pci_domain_ops = {
 	.read_resources	  = pci_domain_read_resources,
 	.set_resources	  = domain_set_resources,
-	.enable_resources = domain_enable_resources,
 	.scan_bus	  = pci_domain_scan_bus,
 	.acpi_name	  = soc_acpi_name,
 };
@@ -132,7 +125,7 @@ static void enable_dev(struct device *dev)
 		sb_enable(dev);
 	else if (dev->path.type == DEVICE_PATH_MMIO)
 		if (i2c_acpi_name(dev) != NULL)
-			dev->ops = &stoneyridge_i2c_mmio_ops;
+			dev->ops = &picasso_i2c_mmio_ops;
 }
 
 static void soc_init(void *chip_info)
@@ -144,32 +137,11 @@ static void soc_init(void *chip_info)
 static void soc_final(void *chip_info)
 {
 	southbridge_final(chip_info);
-	fam15_finalize(chip_info);
 }
 
-struct chip_operations soc_amd_stoneyridge_ops = {
-	CHIP_NAME("AMD StoneyRidge SOC")
+struct chip_operations soc_amd_picasso_ops = {
+	CHIP_NAME("AMD Picasso SOC")
 	.enable_dev = enable_dev,
 	.init = soc_init,
 	.final = soc_final
 };
-
-static void earliest_ramstage(void *unused)
-{
-	int s3_resume = acpi_s3_resume_allowed() &&
-			romstage_handoff_is_resume();
-	if (!s3_resume) {
-		post_code(0x46);
-		if (CONFIG(SOC_AMD_PSP_SELECTABLE_SMU_FW))
-			psp_load_named_blob(MBOX_BIOS_CMD_SMU_FW2, "smu_fw2");
-
-		post_code(0x47);
-		do_agesawrapper(AMD_INIT_ENV, "amdinitenv");
-	} else {
-		/* Complete the initial system restoration */
-		post_code(0x46);
-		do_agesawrapper(AMD_S3LATE_RESTORE, "amds3laterestore");
-	}
-}
-
-BOOT_STATE_INIT_ENTRY(BS_PRE_DEVICE, BS_ON_ENTRY, earliest_ramstage, NULL);

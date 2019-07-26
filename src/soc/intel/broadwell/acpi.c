@@ -386,11 +386,11 @@ static void generate_T_state_entries(int core, int cores_per_package)
 
 static void generate_C_state_entries(void)
 {
-	struct device *dev = SA_DEV_ROOT;
-	config_t *config = dev->chip_info;
 	acpi_cstate_t map[3];
 	int *set;
 	int i;
+
+	config_t *config = config_of_path(SA_DEVFN_ROOT);
 
 	if (config->s0ix_enable)
 		set = cstate_set_s0ix;
@@ -580,7 +580,7 @@ void generate_cpu_entries(struct device *device)
 
 static unsigned long acpi_fill_dmar(unsigned long current)
 {
-	struct device *const igfx_dev = dev_find_slot(0, SA_DEVFN_IGD);
+	struct device *const igfx_dev = pcidev_path_on_root(SA_DEVFN_IGD);
 	const u32 gfxvtbar = MCHBAR32(GFXVTBAR) & ~0xfff;
 	const u32 vtvc0bar = MCHBAR32(VTVC0BAR) & ~0xfff;
 	const bool gfxvten = MCHBAR32(GFXVTBAR) & 0x1;

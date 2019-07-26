@@ -67,6 +67,7 @@ ramstage-y += systemagent.c
 ramstage-y += thermal.c
 ramstage-y += uart.c
 ramstage-y += vr_config.c
+ramstage-y += xhci.c
 
 smm-y += elog.c
 smm-y += gpio.c
@@ -74,6 +75,7 @@ smm-y += p2sb.c
 smm-y += pmutil.c
 smm-y += smihandler.c
 smm-y += uart.c
+smm-y += xhci.c
 
 postcar-y += memmap.c
 postcar-y += gspi.c
@@ -83,14 +85,16 @@ postcar-y += uart.c
 
 ifeq ($(CONFIG_SKYLAKE_SOC_PCH_H),y)
 # Skylake H Q0
-cpu_microcode_bins += 3rdparty/blobs/cpu/intel/model_506ex/microcode.bin
-# Kabylake HB0
-cpu_microcode_bins += 3rdparty/blobs/cpu/intel/model_906ex/microcode.bin
+cpu_microcode_bins += 3rdparty/intel-microcode/intel-ucode/06-5e-03
+# Kabylake H B0 S0
+cpu_microcode_bins += 3rdparty/intel-microcode/intel-ucode/06-9e-09
 else
 # Skylake D0
-cpu_microcode_bins += 3rdparty/blobs/cpu/intel/model_406ex/microcode.bin
-# Kabylake H0, Y0
-cpu_microcode_bins += 3rdparty/blobs/cpu/intel/model_806ex/microcode.bin
+cpu_microcode_bins += 3rdparty/intel-microcode/intel-ucode/06-4e-03
+# Kabylake H0, J0, J1
+cpu_microcode_bins += 3rdparty/intel-microcode/intel-ucode/06-8e-09
+# Kabylake Y0
+cpu_microcode_bins += 3rdparty/intel-microcode/intel-ucode/06-8e-0a
 endif
 # Missing for Skylake C0 (0x406e2), Kabylake G0 (0x406e8), Kabylake HA0 (0x506e8)
 # since those are probably pre-release samples.
