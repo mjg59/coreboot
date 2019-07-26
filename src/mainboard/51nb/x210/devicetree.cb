@@ -5,9 +5,7 @@ chip soc/intel/skylake
 	register "deep_s3_enable_dc" = "1"
 	register "deep_s5_enable_ac" = "1"
 	register "deep_s5_enable_dc" = "1"
-	
-	# Disable LAN wakeup pin
-	# register "deep_sx_config" = "DSX_EN_LAN_WAKE_PIN" 
+	# register "deep_sx_config" = "DSX_EN_LAN_WAKE_PIN" # We don't want no LAN wakeup
 
 	register "eist_enable" = "1"
 
@@ -35,13 +33,14 @@ chip soc/intel/skylake
 	# FSP Configuration
 	register "ProbelessTrace" = "0"
 	register "EnableLan" = "0"
-	register "EnableSata" = "0"	# Disable SATA. I have a NVME only system
+	register "EnableSata" = "1"
 	register "SataSalpSupport" = "0"
 	register "SataMode" = "0"
 	register "SataPortsEnable[0]" = "1"
 	register "SataPortsEnable[1]" = "1"
 	register "SataPortsEnable[2]" = "1"
 	register "SataPortsDevSlp[0]" = "1"
+	register "SataPortsDevSlp[1]" = "1"
 	register "SataPortsDevSlp[2]" = "1"
 	register "SataPwrOptEnable" = "1"
 	# register "SataSpeedLimit" = "2"
@@ -58,15 +57,15 @@ chip soc/intel/skylake
 	register "PttSwitch" = "0"
 	register "SkipExtGfxScan" = "1"
 	register "Device4Enable" = "1"
-	register "HeciEnabled" = "0"
+	register "HeciEnabled" = "1"
 	register "SaGv" = "3"
 	register "PmConfigSlpS3MinAssert" = "2"		# 50ms
 	register "PmConfigSlpS4MinAssert" = "1"		# 1s
 	register "PmConfigSlpSusMinAssert" = "3"	# 500ms
 	register "PmConfigSlpAMinAssert" = "3"		# 2s
 	register "PmTimerDisabled" = "0"
-	
-	# Enable PCICLKRUN - AFAIK this stops the PCI clocks when idle and helps save power
+
+	# Enable PCI CLKRUN Logic
 	register "PmConfigPciClockRun" = "1"
 	
 	register "serirq_mode" = "SERIRQ_CONTINUOUS"
@@ -155,23 +154,23 @@ chip soc/intel/skylake
 	}"
 
 	# Enable Root Ports 3, 4 and 9
-	register "PcieRpEnable[2]" = "1"				# Ethernet controller
+	register "PcieRpEnable[2]" = "1"			# LAN card
 	register "PcieRpClkReqSupport[2]" = "1"			# CLKREQ# enables L1 substates 
 	register "PcieRpClkReqNumber[2]" = "0"			
 	register "PcieRpClkSrcNumber[2]" = "0"
 	register "PcieRpAdvancedErrorReporting[2]" = "1"
 	register "PcieRpLtrEnable[2]" = "1"
 
-	register "PcieRpEnable[3]" = "1"				# Wireless controller
+	register "PcieRpEnable[3]" = "1"			# WLAN card
 	register "PcieRpClkReqSupport[3]" = "1"
 	register "PcieRpClkReqNumber[3]" = "1"			
 	register "PcieRpClkSrcNumber[3]" = "1"
 	register "PcieRpAdvancedErrorReporting[3]" = "1"
 	register "PcieRpLtrEnable[3]" = "1"
 
-	register "PcieRpEnable[8]" = "1"				# NVME
+	register "PcieRpEnable[8]" = "1"			# NVME
 	register "PcieRpClkReqSupport[8]" = "0"     		# Switching off L1 substates for the nvme port.
-	register "PcieRpClkReqNumber[8]" = "4"		       # No number seems to work. (didn't try 4)
+	register "PcieRpClkReqNumber[8]" = "4"			# No number seems to work. (didn't try 4)
 	register "PcieRpClkSrcNumber[8]" = "4"
 	register "PcieRpAdvancedErrorReporting[8]" = "1"
 	register "PcieRpLtrEnable[8]" = "1"
@@ -179,6 +178,7 @@ chip soc/intel/skylake
 	register "usb2_ports[0]" = "USB2_PORT_MID(OC1)"		# Type-A Port (left)
 	register "usb2_ports[1]" = "USB2_PORT_MID(OC1)"		# Type-A Port (left)
 	register "usb2_ports[5]" = "USB2_PORT_MID(OC1)"		# Type-A Port (right)
+	register "usb2_ports[6]" = "USB2_PORT_FLEX(OC2)"	# webcam
 	register "usb2_ports[7]" = "USB2_PORT_FLEX(OC2)"	# WiFi PCIe port USB
 
 	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC1)"	# Type-A Port (left)
@@ -189,7 +189,7 @@ chip soc/intel/skylake
 	register "tdp_pl1_override" = "25"
 
 	# PL2 override 35W
-	register "tdp_pl2_override" = "35"
+	register "tdp_pl2_override" = "44"
 
 	# Send an extra VR mailbox command for the PS4 exit issue
 	register "SendVrMbxCmd" = "2"
@@ -206,14 +206,14 @@ chip soc/intel/skylake
 		device pci 00.0 on  end # Host Bridge
 		device pci 02.0 on  end # Integrated Graphics Device
 		device pci 14.0 on  end # USB xHCI
-		device pci 14.1 off end # USB xDCI (OTG) -- Turn this off
+		device pci 14.1 on  end # USB xDCI (OTG) 
 		device pci 14.2 on  end # Thermal Subsystem
-		device pci 16.0 off end # Management Engine Interface 1   -- Turn this off
+		device pci 16.0 on end # Management Engine Interface 1  
 		device pci 16.1 off end # Management Engine Interface 2
 		device pci 16.2 off end # Management Engine IDE-R
 		device pci 16.3 off end # Management Engine KT Redirection
 		device pci 16.4 off end # Management Engine Interface 3
-		device pci 17.0 off end # SATA  	-- we turn it off in a NVME only system
+		device pci 17.0 on end # SATA
 		device pci 1c.0 on  end # PCI Express Port 1
 		device pci 1c.1 off end # PCI Express Port 2
 		device pci 1c.2 off end # PCI Express Port 3
@@ -240,7 +240,7 @@ chip soc/intel/skylake
 		device pci 1f.2 on  end # Power Management Controller
 		device pci 1f.3 on  end # Intel HDA
 		device pci 1f.4 on  end # SMBus
-		device pci 1f.5 off end # PCH SPI - Turn this off. Shows as "Unclassified non vga device"
+		device pci 1f.5 on end # PCH SPI 
 		device pci 1f.6 off end # GbE
 	end
 end
