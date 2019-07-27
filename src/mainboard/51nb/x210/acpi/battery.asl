@@ -32,7 +32,7 @@ Device (BAT)
         }
 
         Name (PBIF, Package () {
-                0x00000001,  /* 0x00: Power Unit: mAH */
+                0x00000000,  /* 0x00: Power Unit: mWH */
                 0xFFFFFFFF,  /* 0x01: Design Capacity */
                 0xFFFFFFFF,  /* 0x02: Last Full Charge Capacity */
                 0x00000001,  /* 0x03: Battery Technology: Rechargeable */
@@ -50,10 +50,10 @@ Device (BAT)
         Method (_BIF, 0, Serialized)
         {
                 /* Design Capacity */
-                Store (DGCP, Index (PBIF, 1))
+                Store (DGCP * 10, Index (PBIF, 1))
 
                 /* Last Full Charge Capacity */
-                Store (FLCP, Index (PBIF, 2))
+                Store (FLCP * 10, Index (PBIF, 2))
 
                 /* Design Voltage */
                 Store (DGVO, Index (PBIF, 4))
@@ -86,14 +86,14 @@ Device (BAT)
                 Store (BSTS, Index (PBST, 0))
 
                 /*
-                  * 1: BATTERY PRESENT RATE
+                  * 1: BATTERY PRESENT RATE - reported in mA, so convert to mW
                   */
-                Store (BPR, Index (PBST, 1))
+                Store (BPR * BPV / 1000, Index (PBST, 1))
 
                 /*
                  * 2: BATTERY REMAINING CAPACITY
                  */
-                Store (BRC, Index (PBST, 2))
+                Store (BRC * 10, Index (PBST, 2))
 
                 /*
                  * 3: BATTERY PRESENT VOLTAGE
