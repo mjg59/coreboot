@@ -5,7 +5,7 @@ chip soc/intel/skylake
 	register "deep_s3_enable_dc" = "1"
 	register "deep_s5_enable_ac" = "1"
 	register "deep_s5_enable_dc" = "1"
-	# register "deep_sx_config" = "DSX_EN_LAN_WAKE_PIN" # We don't want no LAN wakeup
+	register "deep_sx_config" = "DSX_EN_LAN_WAKE_PIN"
 
 	register "eist_enable" = "1"
 
@@ -26,16 +26,15 @@ chip soc/intel/skylake
 
 	# Disable DPTF
 	register "dptf_enable" = "0"
-
-	# Enable s0ix
-	register "s0ix_enable" = "1"
-
+	
 	# FSP Configuration
 	register "ProbelessTrace" = "0"
 	register "EnableLan" = "0"
 	register "EnableSata" = "1"
 	register "SataSalpSupport" = "1"
 	register "SataMode" = "0"
+
+	# The X210 has 3 SATA ports: a full SATA port, mSATA, and SATA over M.2
 	register "SataPortsEnable[0]" = "1"
 	register "SataPortsEnable[1]" = "1"
 	register "SataPortsEnable[2]" = "1"
@@ -43,7 +42,7 @@ chip soc/intel/skylake
 	register "SataPortsDevSlp[1]" = "1"
 	register "SataPortsDevSlp[2]" = "1"
 	register "SataPwrOptEnable" = "1"
-	# register "SataSpeedLimit" = "2"
+	
 	register "EnableAzalia" = "1"
 	register "DspEnable" = "0"
 	register "IoBufferOwnership" = "0"
@@ -65,9 +64,6 @@ chip soc/intel/skylake
 	register "PmConfigSlpAMinAssert" = "3"		# 2s
 	register "PmTimerDisabled" = "0"
 
-	# Enable PCI CLKRUN Logic
-	register "PmConfigPciClockRun" = "1"
-	
 	register "serirq_mode" = "SERIRQ_CONTINUOUS"
 
 	register "pirqa_routing" = "PCH_IRQ11"
@@ -153,24 +149,27 @@ chip soc/intel/skylake
 		.dc_loadline = 310,
 	}"
 
+	# Enable CLKRUN logic to stop the PCI clocks when idle
+	register "PmConfigPciClockRun" = "1"
+
 	# Enable Root Ports 3, 4 and 9
-	register "PcieRpEnable[2]" = "1"			# LAN card
-	register "PcieRpClkReqSupport[2]" = "1"			# CLKREQ# enables L1 substates 
-	register "PcieRpClkReqNumber[2]" = "0"			
+	register "PcieRpEnable[2]" = "1" # Ethernet controller
+	register "PcieRpClkReqSupport[2]" = "1"
+	register "PcieRpClkReqNumber[2]" = "0"
 	register "PcieRpClkSrcNumber[2]" = "0"
 	register "PcieRpAdvancedErrorReporting[2]" = "1"
 	register "PcieRpLtrEnable[2]" = "1"
 
-	register "PcieRpEnable[3]" = "1"			# WLAN card
+	register "PcieRpEnable[3]" = "1" # Wireless controller
 	register "PcieRpClkReqSupport[3]" = "1"
-	register "PcieRpClkReqNumber[3]" = "1"			
+	register "PcieRpClkReqNumber[3]" = "1"
 	register "PcieRpClkSrcNumber[3]" = "1"
 	register "PcieRpAdvancedErrorReporting[3]" = "1"
 	register "PcieRpLtrEnable[3]" = "1"
 
-	register "PcieRpEnable[8]" = "1"			# NVME
-	register "PcieRpClkReqSupport[8]" = "1"     		
-	register "PcieRpClkReqNumber[8]" = "4"			
+	register "PcieRpEnable[8]" = "1" # NVMe controller
+	register "PcieRpClkReqSupport[8]" = "1"
+	register "PcieRpClkReqNumber[8]" = "4"
 	register "PcieRpClkSrcNumber[8]" = "4"
 	register "PcieRpAdvancedErrorReporting[8]" = "1"
 	register "PcieRpLtrEnable[8]" = "1"
@@ -188,8 +187,8 @@ chip soc/intel/skylake
 	# PL1 override 25W
 	register "tdp_pl1_override" = "25"
 
-	# PL2 override 35W
-	register "tdp_pl2_override" = "35"
+	# PL2 override 44W
+	register "tdp_pl2_override" = "44"
 
 	# Send an extra VR mailbox command for the PS4 exit issue
 	register "SendVrMbxCmd" = "2"
@@ -206,9 +205,9 @@ chip soc/intel/skylake
 		device pci 00.0 on  end # Host Bridge
 		device pci 02.0 on  end # Integrated Graphics Device
 		device pci 14.0 on  end # USB xHCI
-		device pci 14.1 off end # USB xDCI (OTG) 
+		device pci 14.1 off end # USB xDCI (OTG)
 		device pci 14.2 on  end # Thermal Subsystem
-		device pci 16.0 on  end # Management Engine Interface 1  
+		device pci 16.0 on  end # Management Engine Interface 1
 		device pci 16.1 off end # Management Engine Interface 2
 		device pci 16.2 off end # Management Engine IDE-R
 		device pci 16.3 off end # Management Engine KT Redirection
@@ -228,19 +227,17 @@ chip soc/intel/skylake
 		device pci 1d.3 off end # PCI Express Port 12
 		device pci 1f.0 on
 			chip ec/51nb/npce985la0dx
-				register "setup_command" = "78"
-				register "setup_data" = "79"
 				device pnp 0c09.0 on end
-			end
-			chip drivers/pc80/tpm
-				device pnp 0c31.0 on end
+				device pnp 4e.5 on end
+				device pnp 4e.6 on end
+				device pnp 4e.11 on end
 			end
 		end # LPC Interface
 		device pci 1f.1 off end # P2SB
 		device pci 1f.2 on  end # Power Management Controller
 		device pci 1f.3 on  end # Intel HDA
 		device pci 1f.4 on  end # SMBus
-		device pci 1f.5 off end # PCH SPI 
+		device pci 1f.5 off end # PCH SPI
 		device pci 1f.6 off end # GbE
 	end
 end
