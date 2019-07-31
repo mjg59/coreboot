@@ -93,7 +93,7 @@ Device (BAT)
                 /*
                  * 2: BATTERY REMAINING CAPACITY
                  */
-                Store (BRC, Index (PBST, 2))
+                Store (BRC * 10000 / DGVO, Index (PBST, 2))
 
                 /*
                  * 3: BATTERY PRESENT VOLTAGE
