@@ -50,16 +50,16 @@ Device (BAT)
         Method (_BIF, 0, Serialized)
         {
                 /* Design Capacity */
-                Store (DGCP, Index (PBIF, 1))
+                Store (DGCP * 10000 / DGVO, Index (PBIF, 1))
 
                 /* Last Full Charge Capacity */
-                Store (FLCP, Index (PBIF, 2))
+                Store (FLCP * 10000 / DGVO, Index (PBIF, 2))
 
                 /* Design Voltage */
                 Store (DGVO, Index (PBIF, 4))
 
                 /* Design Capacity of Warning */
-                Store (BDW, Index (PBIF, 5))
+                Store (BDW * 10000 / DGVO, Index (PBIF, 5))
 
                 /* Design Capacity of Low */
                 Store (BDL, Index (PBIF, 6))
