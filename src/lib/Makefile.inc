@@ -57,6 +57,7 @@ verstage-y += halt.c
 verstage-y += fmap.c
 verstage-y += libgcc.c
 verstage-y += memcmp.c
+verstage-y += string.c
 verstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 verstage-y += boot_device.c
 verstage-$(CONFIG_CONSOLE_CBMEM) += cbmem_console.c
@@ -64,6 +65,7 @@ verstage-$(CONFIG_CONSOLE_CBMEM) += cbmem_console.c
 verstage-$(CONFIG_GENERIC_UDELAY) += timer.c
 verstage-$(CONFIG_GENERIC_GPIO_LIB) += gpio.c
 
+romstage-$(CONFIG_VENDOR_EMULATION) += ramdetect.c
 romstage-y += prog_loaders.c
 romstage-y += prog_ops.c
 romstage-y += memchr.c
@@ -104,6 +106,7 @@ endif
 
 romstage-$(CONFIG_GENERIC_UDELAY) += timer.c
 
+ramstage-$(CONFIG_VENDOR_EMULATION) += ramdetect.c
 ramstage-y += prog_loaders.c
 ramstage-y += prog_ops.c
 ramstage-y += hardwaremain.c
@@ -124,6 +127,7 @@ ramstage-y += stack.c
 ramstage-y += hexstrtobin.c
 ramstage-y += wrdd.c
 ramstage-$(CONFIG_CONSOLE_CBMEM) += cbmem_console.c
+ramstage-$(CONFIG_BOOTSPLASH) += bootsplash.c
 ramstage-$(CONFIG_BOOTSPLASH) += jpeg.c
 ramstage-$(CONFIG_TRACE) += trace.c
 postcar-$(CONFIG_TRACE) += trace.c
@@ -153,6 +157,7 @@ ramstage-y += cbmem_common.c
 ramstage-y += imd_cbmem.c
 ramstage-y += imd.c
 
+postcar-$(CONFIG_VENDOR_EMULATION) += ramdetect.c
 postcar-y += cbmem_common.c
 postcar-$(CONFIG_CONSOLE_CBMEM) += cbmem_console.c
 postcar-y += imd_cbmem.c

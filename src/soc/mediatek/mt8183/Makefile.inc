@@ -49,10 +49,17 @@ ramstage-y += ../common/pmic_wrap.c
 ramstage-y += ../common/rtc.c rtc.c
 ramstage-y += soc.c
 ramstage-$(CONFIG_SPI_FLASH) += ../common/spi.c spi.c
+ramstage-y += sspm.c
 ramstage-y += ../common/timer.c
 ramstage-y += ../common/uart.c
 ramstage-y += ../common/usb.c
 ramstage-y += ../common/wdt.c
+ramstage-y += md_ctrl.c
+
+cbfs-files-y += sspm.bin
+sspm.bin-file := 3rdparty/blobs/soc/mediatek/mt8183/sspm.bin
+sspm.bin-type := raw
+sspm.bin-compression := $(CBFS_COMPRESS_FLAG)
 
 CPPFLAGS_common += -Isrc/soc/mediatek/mt8183/include
 CPPFLAGS_common += -Isrc/soc/mediatek/common/include

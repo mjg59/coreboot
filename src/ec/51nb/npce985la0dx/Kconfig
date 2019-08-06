@@ -15,7 +15,7 @@
 
 config EC_51NB_NPCE985LA0DX
 	bool
-	default y
+	default n
 	help
 	  Support for the 51NB NPCE985LA0DX EC
 
@@ -24,7 +24,7 @@ if EC_51NB_NPCE985LA0DX
 comment "Please select the following otherwise your laptop cannot be powered on."
 
 config EC_51NB_NPCE985LA0DX_FIRMWARE
-	bool "Add firmware images for 51NB NPCE985LA0DX EC"
+	bool "Add firmware image for 51NB NPCE985LA0DX EC"
 	depends on EC_51NB_NPCE985LA0DX
 	default y
 	help

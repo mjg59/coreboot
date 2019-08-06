@@ -9,13 +9,11 @@ config BOARD_SPECIFIC_OPTIONS
 	select SOC_INTEL_KABYLAKE
 	select SOC_INTEL_COMMON_BLOCK_HDA_VERB
 	select NO_POST
-
-select MAINBOARD_USES_FSP2_0
+	select MAINBOARD_USES_FSP2_0
 	select SPD_READ_BY_WORD
-
-config IRQ_SLOT_COUNT
-	int
-	default 18
+	select MAINBOARD_HAS_LIBGFXINIT
+	select GFX_GMA_INTERNAL_IS_EDP
+	select EC_51NB_NPCE985LA0DX
 
 config MAINBOARD_VENDOR
 	string
@@ -64,10 +62,6 @@ config CPU_MICROCODE_CBFS_LEN
 config CPU_MICROCODE_CBFS_LOC
 	hex
 	default 0xFFE115A0
-
-config CBFS_SIZE
-	hex
-	default 0x59fe00
 
 config FMDFILE
 	string

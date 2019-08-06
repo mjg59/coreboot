@@ -25,6 +25,8 @@
 #include <cpu/x86/mtrr.h>
 #include <program_loading.h>
 #include <cpu/intel/smm/gen1/smi.h>
+#include <stdint.h>
+#include <stage_cache.h>
 
 /* Decodes TSEG region size to bytes. */
 u32 decode_tseg_size(const u8 esmramc)
@@ -86,6 +88,16 @@ u32 decode_igd_memory_size(const u32 gms)
 		die("Bad Graphics Mode Select (GMS) setting.\n");
 
 	return ggc2uma[gms] << 10;
+}
+
+void stage_cache_external_region(void **base, size_t *size)
+{
+	/* The stage cache lives at the end of the TSEG region.
+	 * The top of RAM is defined to be the TSEG base address.
+	 */
+	*size = CONFIG_SMM_RESERVED_SIZE;
+	*base = (void *)((uintptr_t)northbridge_get_tseg_base()
+		+ northbridge_get_tseg_size() - CONFIG_SMM_RESERVED_SIZE);
 }
 
 /* platform_enter_postcar() determines the stack to use after

@@ -13,5 +13,5 @@
 ## GNU General Public License for more details.
 ##
 
-ramstage-y += ramstage.c
 ramstage-$(CONFIG_SOC_INTEL_COMMON_BLOCK_HDA_VERB) += hda_verb.c
+ramstage-$(CONFIG_MAINBOARD_USE_LIBGFXINIT) += gma-mainboard.ads

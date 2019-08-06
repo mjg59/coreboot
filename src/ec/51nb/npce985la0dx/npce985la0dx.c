@@ -13,34 +13,21 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/io.h>
-#include <device/device.h>
+#include <device/pnp.h>
 
-#include "chip.h"
+/*
+ * This embedded controller looks awfully like a SuperIO chip. LDNs 5 and 6
+ * need to be enabled to turn on the keyboard and mouse controller, and LDN
+ * 0x11 needs to be enabled to turn on ACPI embedded controller
+ * functionality.
+ */
+static struct pnp_info dev_infos[] = {
+	{ NULL, 0x05 }, { NULL, 0x06 }, { NULL, 0x11 }
+};
 
 static void ec_51nb_npce985la0dx_ops_enable(struct device *dev)
 {
-	const struct ec_51nb_npce985la0dx_config *config = dev->chip_info;
-	int setup_command = config->setup_command;
-	int setup_data = config->setup_data;
-
-	/* Enable function 5 (PS/2 AUX) */
-	outb(LDN_SEL, setup_command);
-	outb(0x05, setup_data);
-	outb(LDN_ENABLE, setup_command);
-	outb(0x01, setup_data);
-
-	/* Enable function 6 (PS/2 KB) */
-	outb(LDN_SEL, setup_command);
-	outb(0x06, setup_data);
-	outb(LDN_ENABLE, setup_command);
-	outb(0x01, setup_data);
-
-	/* Enable function 17 (EC) */
-	outb(LDN_SEL, setup_command);
-	outb(0x11, setup_data);
-	outb(LDN_ENABLE, setup_command);
-	outb(0x01, setup_data);
+	pnp_enable_devices(dev, &pnp_ops, ARRAY_SIZE(dev_infos), dev_infos);
 }
 
 struct chip_operations ec_51nb_npce985la0dx_ops = {

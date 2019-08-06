@@ -108,8 +108,8 @@ void set_power_limits(u8 power_limit_1_time)
 
 	config_t *conf = config_of_path(SA_DEVFN_ROOT);
 
-	if (power_limit_1_time > ARRAY_SIZE(power_limit_time_sec_to_msr))
-		power_limit_1_time = 28;
+	if (power_limit_1_time >= ARRAY_SIZE(power_limit_time_sec_to_msr))
+		power_limit_1_time = ARRAY_SIZE(power_limit_time_sec_to_msr) - 1;
 
 	if (!(msr.lo & PLATFORM_INFO_SET_TDP))
 		return;
@@ -384,8 +384,14 @@ static void configure_thermal_target(void)
  */
 static void enable_pm_timer_emulation(void)
 {
-	/* ACPI PM timer emulation */
+	const struct soc_intel_cannonlake_config *config;
 	msr_t msr;
+
+	config = config_of_path(SA_DEVFN_ROOT);
+
+	/* Enable PM timer emulation only if ACPI PM timer is disabled */
+	if (!config->PmTimerDisabled)
+		return;
 	/*
 	 * The derived frequency is calculated as follows:
 	 *    (CTC_FREQ * msr[63:32]) >> 32 = target frequency.
