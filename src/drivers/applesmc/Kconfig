@@ -1,0 +1,6 @@
+config DRIVERS_EMULATED_APPLE_SMC
+	bool "Emulate Apple SMC"
+
+config DRIVERS_APPLE_SMC_OSK
+	string "Apple SMC OSK"
+	default "default invalid OSK"
