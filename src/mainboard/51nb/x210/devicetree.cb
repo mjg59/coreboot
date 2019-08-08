@@ -37,14 +37,14 @@ chip soc/intel/skylake
 	# FSP Configuration
 	register "ProbelessTrace" = "0"
 	register "EnableLan" = "0"
-	register "EnableSata" = "0"
+	register "EnableSata" = "1"
 	register "SataSalpSupport" = "1"
 	register "SataMode" = "0"
 
 	# The X210 has 3 SATA ports: a full SATA port, mSATA, and SATA over M.2
-	register "SataPortsEnable[0]" = "0"	# I disable all three ports
-	register "SataPortsEnable[1]" = "0"
-	register "SataPortsEnable[2]" = "0"
+	register "SataPortsEnable[0]" = "1"	
+	register "SataPortsEnable[1]" = "1"
+	register "SataPortsEnable[2]" = "1"
 	register "SataPortsDevSlp[0]" = "1"
 	register "SataPortsDevSlp[1]" = "1"
 	register "SataPortsDevSlp[2]" = "1"
@@ -219,7 +219,7 @@ chip soc/intel/skylake
 		device pci 16.2 off end # Management Engine IDE-R
 		device pci 16.3 off end # Management Engine KT Redirection
 		device pci 16.4 off end # Management Engine Interface 3
-		device pci 17.0 off end # SATA
+		device pci 17.0 on  end # SATA
 		device pci 1c.0 on  end # PCI Express Port 1
 		device pci 1c.1 off end # PCI Express Port 2
 		device pci 1c.2 off end # PCI Express Port 3
