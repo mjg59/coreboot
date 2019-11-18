@@ -97,10 +97,10 @@ Device (IGPU)
 
                 Method (_BCL, 0, NotSerialized)
                 {
-                        Return (Package (0x12)
+                        Return (Package (0x13)
                         {
                                 0x0A,
-                                0x0F,
+                                0x10,
                                 0x00,
                                 0x01,
                                 0x02,
@@ -116,16 +116,27 @@ Device (IGPU)
                                 0x0C,
                                 0x0D,
                                 0x0E,
-                                0x0F
+                                0x0F,
+				0x10
                         })
                 }
                 Method (_BCM, 1, NotSerialized)
                 {
-                        \_SB.PCI0.LPCB.EC.BKLG = Arg0
+			If (LEqual (Arg0, Zero))
+			{
+				\_SB.PCI0.LPCB.EC.BKLT = Zero
+			} Else {
+				\_SB.PCI0.LPCB.EC.BKLT = One
+				\_SB.PCI0.LPCB.EC.BKLG = Arg0 - 1
+			}
                 }
                 Method (_BQC, 0, NotSerialized)
                 {
-                        Return (\_SB.PCI0.LPCB.EC.BKLG)
+			If (LEqual (\_SB.PCI0.LPCB.EC.BKLT, Zero))
+			{
+				Return (Zero)
+			}
+                        Return (\_SB.PCI0.LPCB.EC.BKLG + 1)
                 }
         }
 }

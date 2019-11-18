@@ -51,4 +51,6 @@ Scope (\_SB)
 			Return (0xF)
 		}
 	}
+
+	#include "rfkill.asl"
 }

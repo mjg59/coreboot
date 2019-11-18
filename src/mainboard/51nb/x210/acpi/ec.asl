@@ -37,9 +37,9 @@ Device (EC)
                 BKLG,   8,
                 TOUP,   1,
                 WIRE,   1,
-                BLTH,   1,
+                WWAN,   1,
                 LIDC,   1,
-                APFG,   1,
+                BKLT,   1,
                 WRST,   1,
                 BTST,   1,
                 ACEB,   1,
@@ -62,6 +62,10 @@ Device (EC)
 
                 /* Initialize LID switch state */
                 Store (LIDC, \LIDS)
+
+		/* Enable radios */
+		WIRE = One
+		WWAN = One
         }
 
         /* KEY_BRIGHTNESSUP */
