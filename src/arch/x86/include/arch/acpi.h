@@ -64,6 +64,7 @@
 /* List of ACPI HID that use the coreboot ACPI ID */
 enum coreboot_acpi_ids {
 	COREBOOT_ACPI_ID_CBTABLE	= 0x0000, /* BOOT0000 */
+	COREBOOT_ACPI_ID_RFKILL		= 0x0001, /* BOOT0001 */
 	COREBOOT_ACPI_ID_MAX		= 0xFFFF, /* BOOTFFFF */
 };
 

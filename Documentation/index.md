@@ -173,6 +173,7 @@ Contents:
 * [Technotes](technotes/index.md)
 * [GPIO toggling in ACPI AML](acpi/gpio.md)
 * [Adding devices to a device tree](acpi/devicetree.md)
+* [Radio device control](acpi/rfkill.md)
 * [Native Graphics Initialization with libgfxinit](gfx/libgfxinit.md)
 * [Display panel-specific documentation](gfx/display-panel.md)
 * [Architecture-specific documentation](arch/index.md)
