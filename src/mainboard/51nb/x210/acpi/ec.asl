@@ -11,6 +11,8 @@ Device (EC)
 		IO (Decode16, 0x66, 0x66, 1, 1)
 	})
 
+	Name (BTN, 0)
+
 	OperationRegion (ERAM, EmbeddedControl, Zero, 0xFF)
 	Field (ERAM, ByteAcc, Lock, Preserve)
 	{
@@ -63,6 +65,48 @@ Device (EC)
 		Notify(\_SB.PCI0.GFX0.LCD, 0x87)
 	}
 
+	/* Fn+F2 */
+	Method (_Q06)
+	{
+		Store (0x1002, Btn)
+		Notify(HKEY, 0x80)
+	}
+
+	/* Fn+F3 */
+	Method (_Q07)
+	{
+		Store (0x1003, Btn)
+		Notify(HKEY, 0x80)
+	}
+
+	/* Fn+F5 */
+	Method (_Q08)
+	{
+		Store (0x1005, Btn)
+		Notify(HKEY, 0x80)
+	}
+
+	/* Fn+F7 */
+	Method (_Q09)
+	{
+		Store (0x1007, Btn)
+		Notify(HKEY, 0x80)
+	}
+
+	/* Fn+F8 */
+	Method (_Q0A)
+	{
+		Store (0x1008, Btn)
+		Notify(HKEY, 0x80)
+	}
+
+	/* Fn+F9 */
+	Method (_Q0B)
+	{
+		Store (0x1009, Btn)
+		Notify(HKEY, 0x80)
+	}
+
 	/* Battery Information Event */
 	Method (_Q0C)
 	{
@@ -93,6 +137,93 @@ Device (EC)
 	Method (_Q14)
 	{
 		Notify (BAT, 0x80)
+	}
+
+	/* Fn+F12 */
+	Method (_Q15)
+	{
+		Store (0x100c, Btn)
+		Notify(HKEY, 0x80)
+	}
+
+	/* Thinkvantage */
+	Method (_Q16)
+	{
+		Store (0x1018, Btn)
+		Notify(HKEY, 0x80)
+	}
+
+	Device (HKEY)
+	{
+		Name (_HID, "LEN0068")
+		Method (_STA)
+		{
+			Return (0x0F)
+		}
+
+		/* MASK */
+		Name (DHKN, 0x080C)
+
+		/* Effective Mask */
+		Name (EMSK, 0)
+
+		/* Device enabled. */
+		Name (EN, 0)
+
+		Method (MHKP, 0, NotSerialized)
+		{
+			Store (BTN, Local0)
+			Store (Zero, BTN)
+			Return (Local0)
+		}		
+
+		/* Enable/disable all events.  */
+		Method (MHKC, 1, NotSerialized)
+		{
+			If (Arg0) {
+				Store (DHKN, EMSK)
+			}
+			Else
+			{
+				Store (Zero, EMSK)
+			}
+			Store (Arg0, EN)
+		}
+
+		Method (DHKC, 0, NotSerialized) {
+		       Return (EN)
+		}
+
+		/* Enable/disable event.  */
+		Method (MHKM, 2, NotSerialized) {
+			If (LLessEqual (Arg0, 0x20)) {
+				ShiftLeft (One, Subtract (Arg0, 1), Local0)
+				If (Arg1)
+				{
+					Or (DHKN, Local0, DHKN)
+				}
+				Else
+				{
+					And (DHKN, Not (Local0), DHKN)
+				}
+				If (EN)
+				{
+					Store (DHKN, EMSK)
+				}
+			}
+		}
+
+		/* Mask hotkey all. */
+		Method (MHKA, 0, NotSerialized)
+		{
+			Return (0x07FFFFFF)
+		}
+
+		/* Version */
+		Method (MHKV, 0, NotSerialized)
+		{
+			Return (0x0100)
+		}
 	}
 
 	Device (AC)
