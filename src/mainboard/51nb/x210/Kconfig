@@ -26,8 +26,8 @@ config MAINBOARD_FAMILY
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "X210" if BOARD_51NB_X210
-	default "X2100" if BOARD_51NB_X2100
+	default "ThinkPad X210" if BOARD_51NB_X210
+	default "ThinkPad X2100" if BOARD_51NB_X2100
 
 config MAINBOARD_VERSION
 	string

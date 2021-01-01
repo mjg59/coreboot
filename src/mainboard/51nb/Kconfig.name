@@ -1,2 +1,2 @@
 config VENDOR_51NB
-	bool "51NB"
+	bool "51NB (based on LENOVO)"
