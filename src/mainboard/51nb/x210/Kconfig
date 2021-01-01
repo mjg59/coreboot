@@ -1,24 +1,33 @@
-if BOARD_51NB_X210
+if BOARD_51NB_X210 || BOARD_51NB_X2100
 
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y
-	select BOARD_ROMSIZE_KB_8192
+	select BOARD_ROMSIZE_KB_8192 if BOARD_51NB_X210
+	select BOARD_ROMSIZE_KB_16384 if BOARD_51NB_X2100
 	select EC_51NB_NPCE985LA0DX
 	select HAVE_ACPI_RESUME
 	select HAVE_ACPI_TABLES
 	select MAINBOARD_HAS_LIBGFXINIT
 	select SOC_INTEL_COMMON_BLOCK_HDA_VERB
-	select SOC_INTEL_KABYLAKE
+	select SOC_INTEL_KABYLAKE if BOARD_51NB_X210
+	select SOC_INTEL_COMETLAKE_1 if BOARD_51NB_X2100
 	select SPD_READ_BY_WORD
 	select SYSTEM_TYPE_LAPTOP
 
+config VARIANT_DIR
+        string
+	default "variants/x210" if BOARD_51NB_X210
+	default "variants/x2100" if BOARD_51NB_X2100
+
 config MAINBOARD_FAMILY
 	string
-	default "X210"
+	default "X210" if BOARD_51NB_X210
+	default "X2100" if BOARD_51NB_X2100
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "X210"
+	default "X210" if BOARD_51NB_X210
+	default "X2100" if BOARD_51NB_X2100
 
 config MAINBOARD_VERSION
 	string
@@ -34,7 +43,8 @@ config MAX_CPUS
 
 config VGA_BIOS_ID
 	string
-	default "8086,5917"
+	default "8086,5917" if BOARD_51NB_X210
+	default "8086,9b41" if BOARD_51NB_X2100
 
 config DIMM_MAX
 	int
@@ -44,9 +54,13 @@ config DIMM_SPD_SIZE
 	int
 	default 512
 
+config DEVICETREE
+        string
+	default "$(CONFIG_VARIANT_DIR)/devicetree.cb"
+
 config FMDFILE
 	string
-	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/board.fmd"
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/\$(CONFIG_VARIANT_DIR)/board.fmd"
 
 config NO_POST
 	default y
